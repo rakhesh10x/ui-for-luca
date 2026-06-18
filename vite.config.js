@@ -12,9 +12,9 @@ export default defineConfig({
         enabled: true
       },
       manifest: {
-        name: 'Modern PWA App',
-        short_name: 'PWA App',
-        description: 'A modern, mobile-first Progressive Web Application',
+        name: 'LUCA',
+        short_name: 'LUCA',
+        description: 'LUCA',
         theme_color: '#000000',
         background_color: '#ffffff',
         display: 'standalone',

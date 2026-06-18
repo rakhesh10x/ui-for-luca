@@ -7,21 +7,45 @@
   z-index: -10;
   pointer-events: none;
   overflow: hidden;
+  background-color: #000000;
 }
 
-/* Layer 1: The colors (Animated once on startup) */
+/* Container for colored layers */
 .ambient-colors {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-image: 
-    radial-gradient(circle at 30% 120%, #512da8 0%, transparent 60%),
-    radial-gradient(circle at 70% 120%, #3f51b5 0%, transparent 60%),
-    radial-gradient(circle at 50% 110%, #1e88e5 0%, transparent 50%);
-  opacity: 0;
-  animation: startupGlow 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 1;
 }
 
-/* Layer 2: Premium Noise and Dotted Texture */
+/* Layer 1: The dynamic flowing colors (Phase 2) */
+.ambient-colors::before {
+  content: "";
+  position: absolute;
+  top: -20%; left: -20%; width: 140%; height: 140%;
+  background-image: 
+    radial-gradient(circle at 30% 50%, #1e88e5 0%, transparent 40%),
+    radial-gradient(circle at 70% 60%, #3f51b5 0%, transparent 40%),
+    radial-gradient(circle at 50% 40%, #512da8 0%, transparent 40%);
+  filter: blur(40px);
+  opacity: 0;
+  animation: dynamicFlow 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Layer 2: The final resting background (Phase 3) */
+.ambient-colors::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    radial-gradient(60vw 75vh at 0% 100%, #512da8 0%, transparent 100%),
+    radial-gradient(60vw 75vh at 100% 100%, #512da8 0%, transparent 100%),
+    radial-gradient(70vw 50vh at 50% 110%, #3f51b5 0%, transparent 100%),
+    radial-gradient(40vw 30vh at 50% 100%, rgba(30, 136, 229, 0.5) 0%, transparent 100%);
+  opacity: 0;
+  animation: restingSettle 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Layer 3: Premium Noise and Dotted Texture */
 .ambient-texture {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -31,19 +55,29 @@
   animation: startupFade 4s ease-in-out forwards;
   -webkit-mask-image: radial-gradient(150vw 110vh at 50% 0%, transparent 70%, black 90%);
   mask-image: radial-gradient(150vw 110vh at 50% 0%, transparent 70%, black 90%);
+  z-index: 1;
 }
 
-/* Layer 3: The deep black valley mask */
+/* Layer 4: The deep black valley mask */
 .ambient-valley-mask {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-image: radial-gradient(150vw 140vh at 50% -15%, #000000 70%, rgba(0,0,0,0.6) 88%, transparent 100%);
+  background-image: radial-gradient(120vw 120vh at 50% -10%, #000000 50%, rgba(0,0,0,0.8) 75%, transparent 100%);
+  z-index: 2;
 }
 
-@keyframes startupGlow {
-  0% { opacity: 0; filter: blur(20px); transform: translateY(30px); }
-  40% { opacity: 0.9; filter: blur(5px); transform: translateY(-5px); }
-  100% { opacity: 0.85; filter: blur(10px); transform: translateY(0); }
+/* Animations */
+@keyframes dynamicFlow {
+  0% { opacity: 0; transform: scale(0.8) rotate(0deg); }
+  10% { opacity: 1; filter: blur(30px); }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.3) rotate(15deg); filter: blur(60px); }
+}
+
+@keyframes restingSettle {
+  0% { opacity: 0; filter: blur(20px); transform: translateY(20px); }
+  60% { opacity: 0.2; filter: blur(10px); transform: translateY(-5px); }
+  100% { opacity: 0.85; filter: blur(0px); transform: translateY(0); }
 }
 
 @keyframes startupFade {

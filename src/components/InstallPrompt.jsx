@@ -11,8 +11,8 @@ export function InstallPrompt() {
   return (
     <div className="install-prompt">
       <div className="install-prompt-info">
-        <h3>Install App</h3>
-        <p className="text-muted">Install this application on your home screen for quick and easy access when you're on the go.</p>
+        <h3>LUCA</h3>
+        <p className="text-muted">Install LUCA on your home screen for quick and easy access when you're on the go.</p>
       </div>
       <div className="install-prompt-actions">
         <button className="btn-primary" onClick={handleInstallClick}>
