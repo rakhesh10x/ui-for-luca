@@ -8,8 +8,49 @@ function App() {
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState([]);
+  const [transcript, setTranscript] = useState('');
+  
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      
+      recognition.onresult = (event) => {
+        let currentTranscript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          currentTranscript += event.results[i][0].transcript;
+        }
+        setTranscript(currentTranscript);
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  // Handle start/stop of listening
+  useEffect(() => {
+    if (isVoiceMode && recognitionRef.current) {
+      setTranscript('');
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        console.log('Recognition already started');
+      }
+    } else if (!isVoiceMode && recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+  }, [isVoiceMode]);
 
   const handleOpenChat = () => {
     if (!isChatMode && !isVoiceMode) {
@@ -33,11 +74,19 @@ function App() {
   const handleVoiceSuccess = () => {
     setIsVoiceMode(false);
     setIsChatMode(true);
-    const transcribedText = "What's the weather like today?";
-    setMessages(prev => [...prev, { role: 'user', content: transcribedText }]);
+    
+    const finalMessage = transcript.trim() ? transcript : "Hello LUCA!";
+    setMessages(prev => [...prev, { role: 'user', content: finalMessage }]);
+    setTranscript('');
+
     setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'ai', content: "It looks like it will be sunny with a high of 75°F today." }]);
+      setMessages(prev => [...prev, { role: 'ai', content: "Got it! I am processing your voice request." }]);
     }, 1000);
+  };
+
+  const handleVoiceCancel = () => {
+    setIsVoiceMode(false);
+    setTranscript('');
   };
 
   useEffect(() => {
@@ -76,7 +125,9 @@ function App() {
                 <path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z" fill="url(#sparkleGrad)" />
               </svg>
             </div>
-            <h1 className="welcome-text">Welcome</h1>
+            <h1 className="welcome-text fade-in-text">
+              {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
+            </h1>
           </div>
         )}
 
@@ -122,7 +173,7 @@ function App() {
         {/* Voice Bottom Controls */}
         {isVoiceMode && (
           <div className="voice-bottom-controls slide-up">
-            <button className="voice-btn" aria-label="Cancel" onClick={() => setIsVoiceMode(false)}>
+            <button className="voice-btn" aria-label="Cancel" onClick={handleVoiceCancel}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
