@@ -50,29 +50,28 @@ body::before, body::after {
   height: 100vh;
   z-index: -1;
   pointer-events: none;
-  will-change: transform, opacity;
 }
 
+/* The colorful moving glow layer at the bottom */
 body::before {
-  background-image: radial-gradient(circle at center bottom, #512da8 0%, #000000 60%);
-  animation: bgBreathe 10s ease-in-out infinite alternate;
+  z-index: -2;
+  background-image: 
+    radial-gradient(circle at 30% 100%, #512da8 0%, transparent 60%),
+    radial-gradient(circle at 70% 100%, #3f51b5 0%, transparent 60%),
+    radial-gradient(circle at 50% 110%, #1e88e5 0%, transparent 50%);
+  animation: glowBreathe 12s ease-in-out infinite alternate;
 }
 
+/* The black U-shape (valley) mask coming from the top */
 body::after {
-  background-image: radial-gradient(circle at 30% 80%, #3f51b5 0%, transparent 50%);
-  animation: bgGlowMove 15s ease-in-out infinite alternate;
-  opacity: 0.5;
+  z-index: -1;
+  background-image: radial-gradient(150vw 120vh at 50% 0%, #000000 65%, rgba(0,0,0,0.5) 85%, transparent 100%);
 }
 
-@keyframes bgBreathe {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.1); opacity: 1; }
-}
-
-@keyframes bgGlowMove {
-  0% { transform: translate(-5%, 5%) scale(1); opacity: 0.3; }
-  50% { transform: translate(5%, -5%) scale(1.2); opacity: 0.6; }
-  100% { transform: translate(-2%, -2%) scale(1.05); opacity: 0.4; }
+@keyframes glowBreathe {
+  0% { transform: scale(1) translateY(0); opacity: 0.6; }
+  50% { transform: scale(1.05) translateY(-2%); opacity: 0.9; }
+  100% { transform: scale(1) translateY(0); opacity: 0.7; }
 }
 
 /* Base App Layout */
