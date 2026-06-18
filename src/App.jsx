@@ -13,8 +13,8 @@ function App() {
 
   const handleOpenChat = () => {
     if (!isChatMode && !isVoiceMode) {
-      setIsChatMode(true);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setIsVoiceMode(true);
+      setIsChatMode(false);
     }
   };
 
