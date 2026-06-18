@@ -31,6 +31,9 @@ To ensure the codebase never feels "clumsy" or confusing, strict separation of c
 
 ## 🚀 Deployment & Maintenance
 
+### Live Application
+**Production URL**: [https://main.d21xc8qnkn17pl.amplifyapp.com/](https://main.d21xc8qnkn17pl.amplifyapp.com/)
+
 ### AWS Amplify
 This project is fully ready for AWS Amplify deployment via GitHub. 
 Because `vite.config.js` is already handling PWA generation, simply point Amplify to this repository. The default build settings (`npm run build` with the `dist` directory) will correctly serve the application over HTTPS, which instantly enables native PWA installation across mobile devices.
