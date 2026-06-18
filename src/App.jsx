@@ -6,11 +6,9 @@ import './App.css';
 function App() {
   const [isChatMode, setIsChatMode] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState([]);
   const [transcript, setTranscript] = useState('');
   
-  const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -53,22 +51,7 @@ function App() {
   }, [isVoiceMode]);
 
   const handleOpenChat = () => {
-    if (!isChatMode && !isVoiceMode) {
-      setIsVoiceMode(true);
-      setIsChatMode(false);
-    }
-  };
-
-  const handleSend = (e) => {
-    e?.preventDefault();
-    if (!inputValue.trim()) return;
-    
-    setMessages(prev => [...prev, { role: 'user', content: inputValue }]);
-    setInputValue('');
-
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'ai', content: "I'm LUCA. How can I help you today?" }]);
-    }, 1000);
+    setIsVoiceMode(true);
   };
 
   const handleVoiceSuccess = () => {
@@ -121,30 +104,20 @@ function App() {
           </div>
         )}
 
-        {/* Bottom Search Bar (Home / Chat Mode) */}
+        {/* Bottom Search Bar (Always acts as a voice button) */}
         {!isVoiceMode && (
           <div className="bottom-bar-container slide-up">
-            <form className="search-bar" onClick={handleOpenChat} onSubmit={handleSend}>
-              {isChatMode ? (
-                <input 
-                  ref={inputRef}
-                  className="chat-input"
-                  value={inputValue}
-                  onChange={e => setInputValue(e.target.value)}
-                  placeholder="Ask LUCA"
-                />
-              ) : (
-                <span className="placeholder-text" style={{ marginLeft: '1rem' }}>Ask LUCA</span>
-              )}
+            <div className="search-bar" onClick={handleOpenChat}>
+              <span className="placeholder-text" style={{ marginLeft: '1rem' }}>Ask LUCA</span>
               
-              <button type="button" className="icon-btn mic-btn" aria-label="Voice input" onClick={(e) => { e.stopPropagation(); setIsVoiceMode(true); setIsChatMode(false); }}>
+              <button type="button" className="icon-btn mic-btn" aria-label="Voice input">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                   <line x1="12" y1="19" x2="12" y2="22" />
                 </svg>
               </button>
-            </form>
+            </div>
           </div>
         )}
 
