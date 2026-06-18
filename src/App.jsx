@@ -11,6 +11,9 @@ function App() {
   
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
+  const buttonRef = useRef(null);
+  const audioCtxRef = useRef(null);
+  const animationFrameRef = useRef(null);
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -36,8 +39,9 @@ function App() {
     }
   }, []);
 
-  // Handle start/stop of listening
+  // Handle start/stop of listening and Audio Visualization
   useEffect(() => {
+    let streamRef;
     if (isVoiceMode && recognitionRef.current) {
       setTranscript('');
       try {
@@ -45,9 +49,61 @@ function App() {
       } catch (e) {
         console.log('Recognition already started');
       }
+
+      // Audio Visualization
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          streamRef = stream;
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          audioCtxRef.current = audioCtx;
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          const source = audioCtx.createMediaStreamSource(stream);
+          source.connect(analyser);
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+          const renderFrame = () => {
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              sum += dataArray[i];
+            }
+            const average = sum / dataArray.length;
+            const volume = Math.min(average / 100, 1);
+
+            if (buttonRef.current) {
+              const time = Date.now() / 1000;
+              const idleSine = (Math.sin(time * 2.5) + 1) / 2; // 0 to 1
+              
+              const scale = Math.max(1 + (idleSine * 0.05), 1 + (volume * 0.15));
+              const opacity = Math.max(0.3 + (idleSine * 0.2), 0.3 + (volume * 0.7));
+              const spread = Math.max(20 + (idleSine * 10), 20 + (volume * 50));
+              
+              buttonRef.current.style.transform = `scale(${scale})`;
+              buttonRef.current.style.boxShadow = `inset 0 -10px ${20 + volume*20}px rgba(81, 45, 168, ${0.4 + volume*0.4}), 0 0 ${spread}px rgba(63, 81, 181, ${0.4 + volume*0.5})`;
+              buttonRef.current.style.setProperty('--volume-opacity', opacity);
+            }
+            animationFrameRef.current = requestAnimationFrame(renderFrame);
+          };
+          renderFrame();
+        })
+        .catch(err => console.error('Mic access denied for viz', err));
+
     } else if (!isVoiceMode && recognitionRef.current) {
       recognitionRef.current.stop();
     }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close();
+      }
+      if (streamRef) {
+        streamRef.getTracks().forEach(track => track.stop());
+      }
+    };
   }, [isVoiceMode]);
 
   const handleOpenChat = () => {
@@ -128,7 +184,7 @@ function App() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             
-            <div className="voice-glow-btn"></div>
+            <div className="voice-glow-btn" ref={buttonRef}></div>
             
             <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
