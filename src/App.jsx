@@ -136,6 +136,13 @@ function App() {
     <>
       <main className={`app-main ${isChatMode ? 'chat-mode' : 'fade-in'}`}>
         
+        {/* Premium Background Layers */}
+        <div className="ambient-background">
+          <div className="ambient-colors"></div>
+          <div className="ambient-texture"></div>
+          <div className="ambient-valley-mask"></div>
+        </div>
+
         {/* Top Area Cleaned */}
 
         {/* Center Content for Home and Voice Mode */}

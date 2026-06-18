@@ -33,45 +33,12 @@ html, body {
   width: 100%;
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-color);
+  background-color: #000000;
   color: var(--text-main);
   line-height: 1.5;
   overscroll-behavior-y: none;
   position: relative;
   z-index: 0;
-}
-
-body::before, body::after {
-  content: "";
-  position: fixed;
-  top: 0; 
-  left: 0; 
-  width: 100vw; 
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* The colorful moving glow layer at the bottom */
-body::before {
-  z-index: -2;
-  background-image: 
-    radial-gradient(circle at 30% 100%, #512da8 0%, transparent 60%),
-    radial-gradient(circle at 70% 100%, #3f51b5 0%, transparent 60%),
-    radial-gradient(circle at 50% 110%, #1e88e5 0%, transparent 50%);
-  animation: glowBreathe 12s ease-in-out infinite alternate;
-}
-
-/* The black U-shape (valley) mask coming from the top */
-body::after {
-  z-index: -1;
-  background-image: radial-gradient(150vw 120vh at 50% 0%, #000000 65%, rgba(0,0,0,0.5) 85%, transparent 100%);
-}
-
-@keyframes glowBreathe {
-  0% { transform: scale(1) translateY(0); opacity: 0.6; }
-  50% { transform: scale(1.05) translateY(-2%); opacity: 0.9; }
-  100% { transform: scale(1) translateY(0); opacity: 0.7; }
 }
 
 /* Base App Layout */
