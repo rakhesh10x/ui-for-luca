@@ -97,34 +97,12 @@ function App() {
     <>
       <main className={`app-main ${isChatMode ? 'chat-mode' : 'fade-in'}`}>
         
-        {/* Voice Mode Top Bar */}
-        {isVoiceMode && (
-          <div className="top-bar slide-down">
-            <button className="icon-btn-light" aria-label="Menu">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
-            <button className="icon-btn-light" aria-label="History">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
-            </button>
-          </div>
-        )}
+        {/* Top Area Cleaned */}
 
         {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
-            <div className="sparkle-logo pulse">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="sparkleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#4285f4" />
-                    <stop offset="33%" stopColor="#9b72cb" />
-                    <stop offset="66%" stopColor="#d96570" />
-                    <stop offset="100%" stopColor="#f4b400" />
-                  </linearGradient>
-                </defs>
-                <path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z" fill="url(#sparkleGrad)" />
-              </svg>
-            </div>
+            {/* Logo removed as requested */}
             <h1 className="welcome-text fade-in-text">
               {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
             </h1>
