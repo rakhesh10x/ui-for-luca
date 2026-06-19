@@ -156,6 +156,9 @@ function App() {
         </div>
 
         {/* Top Area Cleaned */}
+        {!isChatMode && !isVoiceMode && (
+          <div className="home-starfield"></div>
+        )}
 
         {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
