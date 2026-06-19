@@ -217,6 +217,15 @@
   flex-direction: column;
   gap: 1rem;
   animation: fadeIn 0.4s ease-out forwards;
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.chat-history::-webkit-scrollbar {
+  display: none;
 }
 
 .message {
