@@ -290,15 +290,11 @@
 
 /* Voice Mode Bottom Controls */
 .voice-bottom-controls {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 2rem 1.5rem 3rem 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 2rem;
+  width: 100%;
 }
 
 .voice-btn {
@@ -358,12 +354,21 @@
 
 /* AI Voice Container & Layout */
 .voice-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem 1.5rem 3rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  gap: 20px;
-  width: 100%;
+  z-index: 50;
+  pointer-events: none; /* Let clicks pass through the invisible full-width container */
+}
+
+.voice-container > * {
+  pointer-events: auto; /* Re-enable clicks on the actual buttons and UI inside */
 }
 
 .ai-voice-ui {
