@@ -363,9 +363,21 @@
 
 /* 2. Make search bar less transparent in chat mode to block scrollable text behind it */
 .chat-mode .search-bar {
-  background-color: rgba(20, 20, 25, 0.85);
+  position: relative;
+  z-index: 10;
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
+  background-color: transparent; /* Rely on pseudo-element for background */
+}
+
+.chat-mode .search-bar::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background-color: #0a0a0c; /* Deep dark color */
+  opacity: 0.98; /* Extreme opacity to completely eliminate readability of underlying text */
+  z-index: -1;
 }
 
 /* AI Voice Container & Layout */
