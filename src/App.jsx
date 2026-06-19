@@ -1,4 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
+import pwabuilderSwRegister from './utils/pwabuilder-sw-register';
+import InstallPrompt from './components/InstallPrompt';
+import Starfield from './components/Starfield';
 import { PWABadge } from './components/PWABadge';
 import './index.css';
 import './App.css';
@@ -157,7 +161,7 @@ function App() {
 
         {/* Top Area Cleaned */}
         {!isChatMode && !isVoiceMode && (
-          <div className="home-starfield"></div>
+          <Starfield />
         )}
 
         {/* Center Content for Home and Voice Mode */}
