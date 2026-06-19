@@ -71,12 +71,16 @@
 
 /* Center Content */
 .center-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Center exactly, then push up 60px to match previous flex layout minus the padding */
+  transform: translate(-50%, calc(-50% - 60px));
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
-  /* Push up further to increase top black space, matching Gemini proportions */
-  transform: translateY(-60px);
+  width: 100%;
 }
 
 .sparkle-logo {
@@ -389,12 +393,6 @@ body:has(.chat-mode),
 
 .chat-mode .ambient-background {
   background-color: #000000;
-}
-
-/* Fix "Listening..." text being cut off at the top when entering voice mode from chat */
-.chat-mode .center-content {
-  transform: none;
-  margin-top: calc(max(env(safe-area-inset-top), 20px) + 2rem);
 }
 
 /* 2. Make search bar less transparent in chat mode to block scrollable text behind it */
