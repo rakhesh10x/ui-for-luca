@@ -6,26 +6,14 @@ import './App.css';
 function App() {
   const [isChatMode, setIsChatMode] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [voiceState, setVoiceState] = useState('idle'); // 'idle' | 'user' | 'ai'
   const [messages, setMessages] = useState([]);
   const [transcript, setTranscript] = useState('');
-  const [lastTranscript, setLastTranscript] = useState('');
-  const [typedTranscript, setTypedTranscript] = useState('');
   
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const buttonRef = useRef(null);
   const audioCtxRef = useRef(null);
   const animationFrameRef = useRef(null);
-  const voiceStateRef = useRef(voiceState);
-  const silenceTimerRef = useRef(Date.now());
-  const aiTimeoutRef = useRef(null);
-  const typingIntervalRef = useRef(null);
-
-  // Sync voiceState to ref for requestAnimationFrame access
-  useEffect(() => {
-    voiceStateRef.current = voiceState;
-  }, [voiceState]);
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -85,34 +73,15 @@ function App() {
 
             if (buttonRef.current) {
               const time = Date.now() / 1000;
-              const currentVoiceState = voiceStateRef.current;
+              const idleSine = (Math.sin(time * 2.5) + 1) / 2; // 0 to 1
               
-              if (currentVoiceState === 'ai') {
-                const aiPulse = (Math.sin(time * 8) + 1) / 2;
-                const scale = 1.05 + (aiPulse * 0.1);
-                const spread = 30 + (aiPulse * 20);
-                buttonRef.current.style.transform = `scale(${scale})`;
-                buttonRef.current.style.boxShadow = `inset 0 -10px 40px rgba(0, 200, 150, 0.8), 0 0 ${spread}px rgba(0, 229, 255, 0.8)`;
-                buttonRef.current.style.setProperty('--volume-opacity', 1);
-              } else {
-                if (volume > 0.05) {
-                  if (currentVoiceState === 'idle') setVoiceState('user');
-                  silenceTimerRef.current = Date.now();
-                } else {
-                  if (currentVoiceState === 'user' && Date.now() - silenceTimerRef.current > 1500) {
-                    setVoiceState('idle');
-                  }
-                }
-                const idleSine = (Math.sin(time * 2.5) + 1) / 2;
-                
-                const scale = Math.max(1 + (idleSine * 0.05), 1 + (volume * 0.15));
-                const opacity = Math.max(0.3 + (idleSine * 0.2), 0.3 + (volume * 0.7));
-                const spread = Math.max(20 + (idleSine * 10), 20 + (volume * 50));
-                
-                buttonRef.current.style.transform = `scale(${scale})`;
-                buttonRef.current.style.boxShadow = `inset 0 -10px ${20 + volume*20}px rgba(81, 45, 168, ${0.4 + volume*0.4}), 0 0 ${spread}px rgba(63, 81, 181, ${0.4 + volume*0.5})`;
-                buttonRef.current.style.setProperty('--volume-opacity', opacity);
-              }
+              const scale = Math.max(1 + (idleSine * 0.05), 1 + (volume * 0.15));
+              const opacity = Math.max(0.3 + (idleSine * 0.2), 0.3 + (volume * 0.7));
+              const spread = Math.max(20 + (idleSine * 10), 20 + (volume * 50));
+              
+              buttonRef.current.style.transform = `scale(${scale})`;
+              buttonRef.current.style.boxShadow = `inset 0 -10px ${20 + volume*20}px rgba(81, 45, 168, ${0.4 + volume*0.4}), 0 0 ${spread}px rgba(63, 81, 181, ${0.4 + volume*0.5})`;
+              buttonRef.current.style.setProperty('--volume-opacity', opacity);
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
@@ -139,74 +108,35 @@ function App() {
 
   const handleOpenChat = () => {
     setIsVoiceMode(true);
-    setVoiceState('idle');
-  };
-
-  const startProgressiveTyping = (userText, aiText) => {
-    let index = 0;
-    setTypedTranscript('');
-    if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-
-    typingIntervalRef.current = setInterval(() => {
-      index++;
-      setTypedTranscript(aiText.slice(0, index));
-      if (index >= aiText.length) {
-        clearInterval(typingIntervalRef.current);
-        aiTimeoutRef.current = setTimeout(() => {
-          setIsVoiceMode(false);
-          setVoiceState('idle');
-          setMessages(prev => [
-            ...prev, 
-            { role: 'user', content: userText },
-            { role: 'ai', content: aiText }
-          ]);
-          setLastTranscript('');
-          setTypedTranscript('');
-        }, 1500); // 1.5 second pause after finishing speaking
-      }
-    }, 40);
   };
 
   const handleVoiceSuccess = () => {
     if (recognitionRef.current) recognitionRef.current.stop();
-    setVoiceState('ai');
     
-    const userMessage = transcript.trim() ? transcript : "Hello LUCA! How are you doing today?";
-    setLastTranscript(userMessage);
+    setIsVoiceMode(false);
+    setIsChatMode(true);
+    
+    const userMessage = transcript.trim() ? transcript : "Hello, how are you?";
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setTranscript('');
 
     const dummyResponses = [
+      "Hi! I'm doing well. How can I help you today?",
       "I am LUCA. I'm here to assist you with anything you need. What's on your mind?",
-      "That's an interesting perspective. I'm analyzing the data right now to give you the best answer.",
-      "I can certainly help you with that. I am processing the information.",
+      "That's an interesting perspective. Let's discuss it further.",
+      "I can certainly help you with that. Here is what I found.",
       "I am an advanced artificial intelligence. I process information at incredible speeds!"
     ];
     const aiResponse = dummyResponses[Math.floor(Math.random() * dummyResponses.length)];
 
-    startProgressiveTyping(userMessage, aiResponse);
-  };
-
-  const handleInterrupt = () => {
-    if (aiTimeoutRef.current) clearTimeout(aiTimeoutRef.current);
-    if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-    
-    setVoiceState('idle');
-    setLastTranscript('');
-    setTypedTranscript('');
-    if (recognitionRef.current) {
-      try { recognitionRef.current.start(); } catch(e){}
-    }
+    setTimeout(() => {
+      setMessages(prev => [...prev, { role: 'ai', content: aiResponse }]);
+    }, 600);
   };
 
   const handleVoiceCancel = () => {
-    if (aiTimeoutRef.current) clearTimeout(aiTimeoutRef.current);
-    if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-    
     setIsVoiceMode(false);
-    setVoiceState('idle');
     setTranscript('');
-    setLastTranscript('');
-    setTypedTranscript('');
     if (recognitionRef.current) recognitionRef.current.stop();
   };
 
@@ -232,11 +162,7 @@ function App() {
           <div className="center-content">
             {/* Logo removed as requested */}
             <h1 className="welcome-text fade-in-text">
-              {isVoiceMode ? (
-                voiceState === 'ai' ? 'Speaking...' : 
-                voiceState === 'user' ? (transcript || 'Listening...') : 
-                'Listening...'
-              ) : 'Welcome'}
+              {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
             </h1>
           </div>
         )}
@@ -273,31 +199,16 @@ function App() {
         {/* Voice Bottom Controls */}
         {isVoiceMode && (
           <div className="voice-container slide-up">
-            {voiceState === 'ai' && (
-              <div className="ai-voice-ui">
-                <div className="live-transcript-bubble">
-                  {typedTranscript}
-                </div>
-                <button className="interrupt-pill" onClick={handleInterrupt}>
-                  Tap to interrupt
-                </button>
-              </div>
-            )}
-            
             <div className="voice-bottom-controls">
-              {voiceState !== 'ai' && (
-                <button className="voice-btn" aria-label="Cancel" onClick={handleVoiceCancel}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              )}
+              <button className="voice-btn" aria-label="Cancel" onClick={handleVoiceCancel}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
               
-              <div className={`voice-glow-btn ${voiceState === 'ai' ? 'ai-active' : ''}`} ref={buttonRef}></div>
+              <div className="voice-glow-btn" ref={buttonRef}></div>
               
-              {voiceState !== 'ai' && (
-                <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </button>
-              )}
+              <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </button>
             </div>
           </div>
         )}
