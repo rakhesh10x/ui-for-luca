@@ -142,27 +142,27 @@ function App() {
     setVoiceState('idle');
   };
 
-  const startProgressiveTyping = (fullText) => {
+  const startProgressiveTyping = (userText, aiText) => {
     let index = 0;
     setTypedTranscript('');
     if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
 
     typingIntervalRef.current = setInterval(() => {
       index++;
-      setTypedTranscript(fullText.slice(0, index));
-      if (index >= fullText.length) {
+      setTypedTranscript(aiText.slice(0, index));
+      if (index >= aiText.length) {
         clearInterval(typingIntervalRef.current);
         aiTimeoutRef.current = setTimeout(() => {
           setIsVoiceMode(false);
           setVoiceState('idle');
           setMessages(prev => [
             ...prev, 
-            { role: 'user', content: fullText },
-            { role: 'ai', content: "Got it! I am processing your voice request." }
+            { role: 'user', content: userText },
+            { role: 'ai', content: aiText }
           ]);
           setLastTranscript('');
           setTypedTranscript('');
-        }, 500);
+        }, 1500); // 1.5 second pause after finishing speaking
       }
     }, 40);
   };
@@ -171,11 +171,19 @@ function App() {
     if (recognitionRef.current) recognitionRef.current.stop();
     setVoiceState('ai');
     
-    const finalMessage = transcript.trim() ? transcript : "Hello LUCA! How are you doing today?";
-    setLastTranscript(finalMessage);
+    const userMessage = transcript.trim() ? transcript : "Hello LUCA! How are you doing today?";
+    setLastTranscript(userMessage);
     setTranscript('');
 
-    startProgressiveTyping(finalMessage);
+    const dummyResponses = [
+      "I am LUCA. I'm here to assist you with anything you need. What's on your mind?",
+      "That's an interesting perspective. I'm analyzing the data right now to give you the best answer.",
+      "I can certainly help you with that. I am processing the information.",
+      "I am an advanced artificial intelligence. I process information at incredible speeds!"
+    ];
+    const aiResponse = dummyResponses[Math.floor(Math.random() * dummyResponses.length)];
+
+    startProgressiveTyping(userMessage, aiResponse);
   };
 
   const handleInterrupt = () => {
