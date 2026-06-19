@@ -361,6 +361,27 @@
 
 /* --- Chat Mode Overrides --- */
 
+/* 0. Globally completely hide all scrollbars (html, body, root, and children) when chat mode is active */
+html:has(.chat-mode)::-webkit-scrollbar,
+body:has(.chat-mode)::-webkit-scrollbar,
+#root:has(.chat-mode)::-webkit-scrollbar,
+.chat-mode::-webkit-scrollbar,
+.chat-mode *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+html:has(.chat-mode),
+body:has(.chat-mode),
+#root:has(.chat-mode),
+.chat-mode,
+.chat-mode * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
 /* 1. Remove violet gradient in chat mode for a clean solid black background */
 .chat-mode .ambient-colors {
   display: none !important;
