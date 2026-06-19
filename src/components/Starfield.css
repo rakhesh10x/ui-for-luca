@@ -14,20 +14,8 @@
 .star-svg {
   position: absolute;
   color: white;
-  will-change: opacity, transform;
 }
 
-.star-svg.twinkling {
-  animation: twinkle var(--twinkle-duration) infinite ease-in-out var(--twinkle-delay);
-}
-
-@keyframes twinkle {
-  0%, 100% { 
-    opacity: calc(var(--base-opacity) * 0.4); 
-    transform: scale(0.8); 
-  }
-  50% { 
-    opacity: calc(var(--base-opacity) * 1.8); 
-    transform: scale(1.3); 
-  }
+.star-svg.glow {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
 }
