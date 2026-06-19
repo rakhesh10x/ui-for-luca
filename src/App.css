@@ -361,6 +361,12 @@
   background-color: #000000;
 }
 
+/* Fix "Listening..." text being cut off at the top when entering voice mode from chat */
+.chat-mode .center-content {
+  transform: none;
+  margin-top: calc(max(env(safe-area-inset-top), 20px) + 2rem);
+}
+
 /* 2. Make search bar less transparent in chat mode to block scrollable text behind it */
 .chat-mode .search-bar {
   position: relative;
