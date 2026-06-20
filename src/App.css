@@ -110,7 +110,7 @@
 .logo-container {
   position: absolute;
   top: 25px;
-  left: calc(50% - 220px);
+  left: calc(50% - 150px);
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
