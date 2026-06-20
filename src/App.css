@@ -491,13 +491,13 @@
   height: 32px;
   border-radius: 50%;
   background: transparent;
-  color: #a1a1aa; /* Brighter gray for better base visibility */
+  color: #888888; /* Solid mid-gray, inherently subtle */
   cursor: pointer;
-  transition: all 0.3s ease; /* Smooth, premium transition */
+  transition: all 0.3s ease;
   border: none;
   outline: none;
-  flex-shrink: 0; /* Important so it doesn't get squished by text */
-  opacity: 0.6; /* Visible, but muted */
+  flex-shrink: 0;
+  opacity: 1; /* Full opacity so it doesn't vanish on dark screens */
 }
 
 .speaker-btn svg {
