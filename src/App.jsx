@@ -129,9 +129,9 @@ function drawLiquidCapsule(canvas, state) {
   ctx.lineTo(width, height);
   ctx.closePath();
   const softFill = ctx.createLinearGradient(0, baseY - 10, 0, height);
-  softFill.addColorStop(0, `rgba(224, 239, 255, ${0.45 + (glow * 0.3)})`);
-  softFill.addColorStop(0.28, `rgba(99, 153, 255, ${0.55 + (glow * 0.35)})`);
-  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.8 + (glow * 0.2)})`);
+  softFill.addColorStop(0, `rgba(224, 239, 255, ${0.15 + (glow * 0.35)})`);
+  softFill.addColorStop(0.28, `rgba(99, 153, 255, ${0.25 + (glow * 0.45)})`);
+  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.45 + (glow * 0.4)})`);
   ctx.fillStyle = softFill;
   ctx.fill();
   ctx.restore();
@@ -149,8 +149,8 @@ function drawLiquidCapsule(canvas, state) {
     ctx.translate(x, y);
     ctx.scale(1 + (level * 0.18), 1);
     const blobGradient = ctx.createRadialGradient(0, -radiusY * 0.3, 2, 0, 0, radiusX);
-    blobGradient.addColorStop(0, `rgba(255, 255, 255, ${0.25 + (glow * 0.4)})`);
-    blobGradient.addColorStop(0.42, `rgba(147, 199, 255, ${0.3 + (glow * 0.4)})`);
+    blobGradient.addColorStop(0, `rgba(255, 255, 255, ${0.1 + (glow * 0.45)})`);
+    blobGradient.addColorStop(0.42, `rgba(147, 199, 255, ${0.12 + (glow * 0.45)})`);
     blobGradient.addColorStop(1, 'rgba(26, 64, 216, 0)');
     ctx.fillStyle = blobGradient;
     ctx.beginPath();
@@ -173,10 +173,10 @@ function drawLiquidCapsule(canvas, state) {
   ctx.closePath();
 
   const liquidFill = ctx.createLinearGradient(0, baseY - 12, 0, height);
-  liquidFill.addColorStop(0, `rgba(246, 250, 255, ${0.5 + (glow * 0.1)})`);
-  liquidFill.addColorStop(0.12, `rgba(182, 217, 255, ${0.66 + (glow * 0.08)})`);
-  liquidFill.addColorStop(0.4, `rgba(92, 150, 255, ${0.8 + (glow * 0.06)})`);
-  liquidFill.addColorStop(1, 'rgba(18, 45, 170, 0.96)');
+  liquidFill.addColorStop(0, `rgba(246, 250, 255, ${0.25 + (glow * 0.3)})`);
+  liquidFill.addColorStop(0.12, `rgba(182, 217, 255, ${0.35 + (glow * 0.35)})`);
+  liquidFill.addColorStop(0.4, `rgba(92, 150, 255, ${0.5 + (glow * 0.35)})`);
+  liquidFill.addColorStop(1, 'rgba(18, 45, 170, 0.8)');
   ctx.fillStyle = liquidFill;
   ctx.fill();
 
