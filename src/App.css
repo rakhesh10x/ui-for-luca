@@ -464,26 +464,29 @@
   align-self: flex-start;
   background-color: transparent;
   color: var(--text-main);
-  display: flex;
-  align-items: center; /* Center horizontally with text */
-  gap: 16px; /* Spacing between text and speaker icon */
+  position: relative; /* Anchor for speaker button */
+  /* display: flex and gap removed to prevent flex wrapping issues */
 }
 
 /* Speaker Icon Button */
 .speaker-btn {
+  position: absolute;
+  right: -40px; /* Hang outside the right edge of the message */
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05); /* Make it slightly visible by default so we know it's there */
   color: #a1a1aa;
   cursor: pointer;
   transition: all 0.2s ease;
-  flex-shrink: 0;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   outline: none;
+  z-index: 10;
 }
 
 .speaker-btn:hover {
