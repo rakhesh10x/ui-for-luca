@@ -116,6 +116,13 @@
   justify-content: center;
 }
 
+/* Home Page Specific Mobile Override */
+@media (max-width: 768px) {
+  .app-main:not(.chat-mode) .bottom-bar-container {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 24px));
+  }
+}
+
 .search-bar {
   background-color: rgba(255, 255, 255, 0.01);
   backdrop-filter: blur(2px);
