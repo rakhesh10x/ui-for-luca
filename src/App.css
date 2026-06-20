@@ -104,25 +104,14 @@
   text-align: center;
 }
 
-/* Home Page Logo */
-.logo-container {
-  position: absolute;
-  top: 25px;
-  left: calc(50% - 100px);
-  transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 5;
-}
-
-.app-logo {
-  width: 230px; /* Desktop: 200-260px */
+/* Home Page Eyes Logo */
+.eyes-logo {
+  width: 250px; /* Desktop: 220-280px */
   object-fit: contain;
 }
 
 @media (max-width: 768px) {
-  .app-logo {
+  .eyes-logo {
     width: 160px; /* Mobile: 140-180px */
   }
 }

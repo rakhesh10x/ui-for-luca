@@ -397,16 +397,12 @@ function App() {
               </button>
             )}
 
-            {/* Logo Container for Home Page Only */}
-        {!isChatMode && !isVoiceMode && (
-          <div className="logo-container fade-in">
-            <img src="logo.png" alt="LUCA Logo" className="app-logo" />
-          </div>
-        )}
-
-        {/* Center Content for Home and Voice Mode */}
+            {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
+            {!isChatMode && !isVoiceMode && (
+              <img src="Eyes_of_LUCA-removebg-preview.png" alt="Eyes of LUCA" className="eyes-logo fade-in" />
+            )}
             <h1 className="welcome-text fade-in-text">
               {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
             </h1>
