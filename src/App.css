@@ -118,6 +118,12 @@
   z-index: 5;
 }
 
+@media (max-width: 768px) {
+  .logo-container {
+    left: calc(50% - 76px); /* Scale down the nudge for the smaller mobile logo */
+  }
+}
+
 .app-logo {
   width: 380px; /* Desktop */
   object-fit: contain;
