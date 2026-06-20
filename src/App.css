@@ -511,13 +511,7 @@
   transition: stroke 0.2s ease;
 }
 
-.speaker-btn:hover {
-  background: rgba(255, 255, 255, 0.08); /* Subtle hover effect */
-}
-
-.speaker-btn:hover svg {
-  stroke: #ffffff !important;
-}
+/* Removed hover effects per user request to keep the icon static */
 
 .speaker-btn:active {
   transform: scale(0.9);
