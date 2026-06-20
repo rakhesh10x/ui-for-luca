@@ -425,6 +425,9 @@ function App() {
             {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
+            {!isChatMode && !isVoiceMode && (
+              <img src="Eyes_of_LUCA-removebg-preview.png?v=3" alt="Eyes of LUCA" className="eyes-logo fade-in" />
+            )}
             <h1 className="welcome-text fade-in-text">
               {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
             </h1>
