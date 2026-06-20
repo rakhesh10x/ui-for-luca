@@ -103,46 +103,42 @@ function App() {
             const average = sum / dataArray.length;
             const rawVolume = Math.min(average / 100, 1);
 
-            // Extremely heavy smoothing (Inertia/Damping)
-            // Low tension, high friction.
+            // In the video, the swell is very slow to rise and EXTREMELY slow to fall
             if (rawVolume > smoothedVolume) {
-              smoothedVolume += (rawVolume - smoothedVolume) * 0.05; // Slow rise
+              smoothedVolume += (rawVolume - smoothedVolume) * 0.08; // Smooth rise
             } else {
-              smoothedVolume += (rawVolume - smoothedVolume) * 0.02; // Very slow decay (1-2 seconds to settle)
+              smoothedVolume += (rawVolume - smoothedVolume) * 0.015; // Very heavy damping for slow decay
             }
 
-            // Wave speed drastically reduced for slow, gliding liquid flow
-            waveTime += 0.008 + (smoothedVolume * 0.015);
+            // Time flow is very slow, creating a "breathing" effect rather than flowing water
+            waveTime += 0.01 + (smoothedVolume * 0.02);
 
             if (buttonRef.current) {
               // Generate SVG Paths for the waves
               const paths = buttonRef.current.querySelectorAll('path');
-              if (paths.length === 5) {
+              if (paths.length === 3) { // The video shows a massive, thick blended shape, best achieved with fewer, blurrier layers
                 const width = 140;
                 const height = 64;
                 
-                // Dynamic water level: 
-                // Idle = 52 (bottom 20%), Speaking = 34 (bottom 50%)
-                // Since smoothedVolume rises slowly, the liquid level rises slowly
-                const baseY = 52 - (smoothedVolume * 18); 
+                // Base Y in the video is quite low, but the blur extends it upward
+                const baseY = 55; 
                 
-                // Keep frequency low for gentle swells, not mountains
+                // The video does NOT have multiple ripples. It is essentially one giant breathing swell.
+                // We use extremely low frequencies so it looks like a single soft bump moving laterally
                 const waves = [
-                  { speedMult: 1.5, freq: 0.02, ampMult: 0.8, offset: 0 },
-                  { speedMult: 1.0, freq: 0.03, ampMult: 1.0, offset: 2.0 },
-                  { speedMult: 2.0, freq: 0.04, ampMult: 0.6, offset: 4.0 },
-                  { speedMult: 1.2, freq: 0.025, ampMult: 1.2, offset: 1.0 },
-                  { speedMult: 0.8, freq: 0.035, ampMult: 0.9, offset: 3.0 }
+                  { speedMult: 0.8, freq: 0.015, ampMult: 1.0, offset: 0 },
+                  { speedMult: 1.2, freq: 0.020, ampMult: 0.8, offset: 2.0 },
+                  { speedMult: 0.6, freq: 0.010, ampMult: 1.2, offset: 4.0 }
                 ];
 
                 waves.forEach((wave, i) => {
                   let d = `M 0 ${height} `;
                   
-                  // Amplitude: Idle = 1.0 (flat), Speaking = 7 (smooth rolling waves)
-                  const amplitude = 1.0 + (smoothedVolume * 6 * wave.ampMult);
+                  // In the video, the amplitude grows massive, filling the entire capsule vertically when loud
+                  const amplitude = 5 + (smoothedVolume * 45 * wave.ampMult);
                   
                   // Calculate points across the X axis
-                  for (let x = 0; x <= width; x += 5) {
+                  for (let x = 0; x <= width; x += 10) {
                     const y = baseY - Math.sin(x * wave.freq + waveTime * wave.speedMult + wave.offset) * amplitude;
                     d += `L ${x} ${y} `;
                   }
@@ -152,8 +148,8 @@ function App() {
                 });
               }
 
-              // Dynamic glow behind the pill
-              buttonRef.current.style.boxShadow = `0 -2px ${10 + smoothedVolume*20}px rgba(40, 100, 255, ${0.1 + smoothedVolume*0.3})`;
+              // The video has a massive, wide blue glow around the button when speaking
+              buttonRef.current.style.boxShadow = `0 0 ${15 + smoothedVolume*40}px rgba(60, 130, 255, ${0.2 + smoothedVolume*0.5})`;
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
@@ -327,21 +323,20 @@ function App() {
                 <svg className="wave-svg" width="140" height="64" viewBox="0 0 140 64" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="waveGrad1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.9)" />
-                      <stop offset="30%" stopColor="rgba(40, 100, 255, 0.8)" />
-                      <stop offset="100%" stopColor="rgba(10, 30, 150, 0.9)" />
+                      <stop offset="0%" stopColor="rgba(255, 255, 255, 1)" />
+                      <stop offset="40%" stopColor="rgba(60, 150, 255, 0.9)" />
+                      <stop offset="100%" stopColor="rgba(10, 40, 180, 1)" />
                     </linearGradient>
                     <linearGradient id="waveGrad2" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.7)" />
-                      <stop offset="40%" stopColor="rgba(50, 120, 255, 0.7)" />
-                      <stop offset="100%" stopColor="rgba(15, 40, 160, 0.9)" />
+                      <stop offset="0%" stopColor="rgba(200, 230, 255, 0.9)" />
+                      <stop offset="50%" stopColor="rgba(80, 120, 255, 0.8)" />
+                      <stop offset="100%" stopColor="rgba(20, 50, 200, 1)" />
                     </linearGradient>
                   </defs>
-                  <path fill="url(#waveGrad1)" opacity="0.5" style={{ filter: 'blur(8px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad2)" opacity="0.6" style={{ filter: 'blur(6px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad1)" opacity="0.7" style={{ filter: 'blur(5px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad2)" opacity="0.8" style={{ filter: 'blur(4px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad1)" opacity="0.9" style={{ filter: 'blur(3px)', mixBlendMode: 'screen' }} />
+                  {/* The video uses massive blur to turn the geometry into a glowing cloud */}
+                  <path fill="url(#waveGrad1)" opacity="0.6" style={{ filter: 'blur(12px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad2)" opacity="0.8" style={{ filter: 'blur(8px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad1)" opacity="1.0" style={{ filter: 'blur(4px)', mixBlendMode: 'screen' }} />
                 </svg>
               </div>
               
