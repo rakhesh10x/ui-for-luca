@@ -29,6 +29,12 @@ const LoginPage = ({ onLogin }) => {
     }
   };
 
+  const handleStandardChange = (e) => {
+    // Only allow digits to be entered
+    const val = e.target.value.replace(/\D/g, '');
+    setStandard(val);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isValid) return;
@@ -80,10 +86,10 @@ const LoginPage = ({ onLogin }) => {
             <label htmlFor="standard">STANDARD *</label>
             <input
               id="standard"
-              type="text"
+              type="tel"
               placeholder="Class you're studying in"
               value={standard}
-              onChange={(e) => setStandard(e.target.value)}
+              onChange={handleStandardChange}
               className="login-input"
             />
           </div>
