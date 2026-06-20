@@ -111,7 +111,7 @@
   position: absolute;
   top: 25px;
   left: calc(50% - 116px); /* Nudged left another 3px */
-  transform: translateX(-50%);
+  /* transform: translateX(-50%); REMOVED to match the visual state when overridden by premiumFadeIn */
   display: flex;
   justify-content: center;
   align-items: center;

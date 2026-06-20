@@ -399,17 +399,12 @@ function App() {
         {/* Starfield Background */}
         <Starfield isFullScreen={isChatMode || isVoiceMode} />
 
-        {/* Global Top Logo (Persistent DOM) */}
-        <div 
-          className="logo-container fade-in"
-          style={{
-            opacity: isLoggedIn && (isChatMode || isVoiceMode) ? 0 : 1,
-            pointerEvents: isLoggedIn && (isChatMode || isVoiceMode) ? 'none' : 'auto',
-            transition: 'opacity 0.3s ease'
-          }}
-        >
-          <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
-        </div>
+        {/* Global Top Logo (Shows on Login and Home Pages) */}
+        {(!isLoggedIn || (!isChatMode && !isVoiceMode)) && (
+          <div className="logo-container">
+            <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
+          </div>
+        )}
 
         {!isLoggedIn ? (
           <LoginPage onLogin={handleLogin} />
