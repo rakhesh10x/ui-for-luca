@@ -106,16 +106,19 @@
   text-align: center;
 }
 
-/* Home Page Logo */
+/* Global Logo Container */
 .logo-container {
-  position: absolute;
+  position: fixed;
   top: 25px;
   left: calc(50% - 116px); /* Nudged left another 3px */
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 5;
+  z-index: 90; /* High z-index to stay above chat messages and UI */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
 }
 
 .app-logo {
