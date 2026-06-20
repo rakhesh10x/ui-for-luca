@@ -92,8 +92,6 @@ function App() {
 
           // Spring physics for volume
           let smoothedVolume = 0;
-          let peakVolume = 0;
-          let peakHoldTime = 0;
           let waveTime = 0; // Custom time accumulator for variable speed
 
           const renderFrame = () => {
@@ -105,25 +103,16 @@ function App() {
             const average = sum / dataArray.length;
             const rawVolume = Math.min(average / 100, 1);
 
-            // Peak hold logic
-            if (rawVolume > peakVolume) {
-              peakVolume = rawVolume;
-              peakHoldTime = 10;
-            } else if (peakHoldTime > 0) {
-              peakHoldTime--;
+            // Extremely heavy smoothing (Inertia/Damping)
+            // Low tension, high friction.
+            if (rawVolume > smoothedVolume) {
+              smoothedVolume += (rawVolume - smoothedVolume) * 0.05; // Slow rise
             } else {
-              peakVolume += (rawVolume - peakVolume) * 0.05;
+              smoothedVolume += (rawVolume - smoothedVolume) * 0.02; // Very slow decay (1-2 seconds to settle)
             }
 
-            // Smooth volume (gradual calm down)
-            if (peakVolume > smoothedVolume) {
-              smoothedVolume += (peakVolume - smoothedVolume) * 0.4;
-            } else {
-              smoothedVolume += (peakVolume - smoothedVolume) * 0.08;
-            }
-
-            // Wave speed increases with volume
-            waveTime += 0.03 + (smoothedVolume * 0.06);
+            // Wave speed drastically reduced for slow, gliding liquid flow
+            waveTime += 0.008 + (smoothedVolume * 0.015);
 
             if (buttonRef.current) {
               // Generate SVG Paths for the waves
@@ -134,6 +123,7 @@ function App() {
                 
                 // Dynamic water level: 
                 // Idle = 52 (bottom 20%), Speaking = 34 (bottom 50%)
+                // Since smoothedVolume rises slowly, the liquid level rises slowly
                 const baseY = 52 - (smoothedVolume * 18); 
                 
                 // Keep frequency low for gentle swells, not mountains
