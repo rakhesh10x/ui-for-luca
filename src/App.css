@@ -176,7 +176,13 @@
   max-width: 600px;
   min-height: 64px; /* Ensure minimum height matches Gemini */
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.4s ease; /* Increased from 0.2s for smoother locking fade */
+}
+
+.search-bar.locked {
+  opacity: 0.25;
+  pointer-events: none;
+  filter: blur(1.5px);
 }
 
 .placeholder-text {

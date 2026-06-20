@@ -304,6 +304,7 @@ function App() {
   }, [isVoiceMode]);
 
   const handleOpenChat = () => {
+    if (isChatMode && isThinking) return;
     setIsVoiceMode(true);
   };
 
@@ -470,7 +471,7 @@ function App() {
         {/* Bottom Search Bar (Always acts as a voice button) */}
         {!isVoiceMode && (
           <div className="bottom-bar-container slide-up">
-            <div className="search-bar" onClick={handleOpenChat}>
+            <div className={`search-bar ${isChatMode && isThinking ? 'locked' : ''}`} onClick={handleOpenChat}>
               <span className="placeholder-text">Ask LUCA</span>
             </div>
           </div>
