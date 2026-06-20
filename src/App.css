@@ -419,12 +419,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  /* Use the smoothed --vol variable for very subtle outer scaling */
-  transform: scale(calc(1 + var(--vol, 0) * 0.05));
-  /* Outer glow intensifies with volume */
-  box-shadow: 0 0 calc(10px + var(--vol, 0) * 30px) rgba(81, 45, 168, calc(0.2 + var(--vol, 0) * 0.4)),
-              inset 0 0 calc(10px + var(--vol, 0) * 20px) rgba(63, 81, 181, calc(0.1 + var(--vol, 0) * 0.2));
-  transition: transform 0.05s linear, box-shadow 0.05s linear;
+  /* Very subtle outer container pulse */
+  transform: scale(calc(1 + var(--vol, 0) * 0.02));
+  transition: transform 0.05s linear;
+  /* Box shadow set by JS */
 }
 
 .voice-layer {
@@ -432,59 +430,12 @@
   top: 50%;
   left: 50%;
   border-radius: 50%;
-  /* High blur for liquid glass effect */
-  filter: blur(calc(12px + var(--vol, 0) * 8px));
   mix-blend-mode: screen;
-  /* Scale width much more than height based on volume */
-  width: calc(var(--base-w) + var(--vol, 0) * var(--expand-w));
-  height: calc(var(--base-h) + var(--vol, 0) * var(--expand-h));
-  opacity: calc(0.3 + var(--vol, 0) * 0.7);
-  transition: width 0.05s linear, height 0.05s linear, opacity 0.05s linear, filter 0.05s linear;
-}
-
-.layer-blue {
-  background: #3b82f6;
-  --base-w: 60px; --expand-w: 120px;
-  --base-h: 40px; --expand-h: 40px;
-  animation: floatBlue 4s ease-in-out infinite alternate;
-}
-
-.layer-purple {
-  background: #8b5cf6;
-  --base-w: 50px; --expand-w: 100px;
-  --base-h: 50px; --expand-h: 50px;
-  animation: floatPurple 3.5s ease-in-out infinite alternate-reverse;
-}
-
-.layer-pink {
-  background: #ec4899;
-  --base-w: 40px; --expand-w: 90px;
-  --base-h: 40px; --expand-h: 40px;
-  animation: floatPink 4.5s ease-in-out infinite alternate;
-}
-
-.layer-cyan {
-  background: #06b6d4;
-  --base-w: 30px; --expand-w: 110px;
-  --base-h: 30px; --expand-h: 30px;
-  animation: floatCyan 3s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes floatBlue {
-  0% { transform: translate(calc(-50% - 15px), calc(-50% - 5px)); }
-  100% { transform: translate(calc(-50% + 15px), calc(-50% + 5px)); }
-}
-@keyframes floatPurple {
-  0% { transform: translate(calc(-50% + 10px), calc(-50% - 10px)); }
-  100% { transform: translate(calc(-50% - 10px), calc(-50% + 10px)); }
-}
-@keyframes floatPink {
-  0% { transform: translate(calc(-50% - 10px), calc(-50% + 10px)); }
-  100% { transform: translate(calc(-50% + 10px), calc(-50% - 10px)); }
-}
-@keyframes floatCyan {
-  0% { transform: translate(-50%, -50%) scale(0.9); }
-  100% { transform: translate(-50%, -50%) scale(1.1); }
+  /* Dynamic blur set by JS */
+  filter: blur(var(--dynamic-blur, 12px));
+  opacity: var(--glow-opacity, 0.3);
+  /* Transform completely controlled by JS physics */
+  will-change: transform;
 }
 
 /* --- Chat Mode Overrides --- */

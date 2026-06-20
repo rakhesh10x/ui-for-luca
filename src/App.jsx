@@ -90,7 +90,19 @@ function App() {
           source.connect(analyser);
           const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
+          // Spring physics variables
           let smoothedVolume = 0;
+          let peakVolume = 0;
+          let peakHoldTime = 0;
+
+          // Define 4 orbs with physics state
+          // blue goes left, cyan goes mid-left, purple goes mid-right, pink goes right
+          const orbs = [
+            { id: 'blue', x: 0, vX: 0, s: 1, vS: 0, targetX: -60, idleSpeed: 1.2, idleAmp: 5, stiffness: 0.1, damping: 0.8 },
+            { id: 'cyan', x: 0, vX: 0, s: 1, vS: 0, targetX: -20, idleSpeed: 0.9, idleAmp: 7, stiffness: 0.08, damping: 0.85 },
+            { id: 'purple', x: 0, vX: 0, s: 1, vS: 0, targetX: 20, idleSpeed: 1.1, idleAmp: 6, stiffness: 0.09, damping: 0.82 },
+            { id: 'pink', x: 0, vX: 0, s: 1, vS: 0, targetX: 60, idleSpeed: 1.3, idleAmp: 4, stiffness: 0.12, damping: 0.75 }
+          ];
 
           const renderFrame = () => {
             analyser.getByteFrequencyData(dataArray);
@@ -101,16 +113,62 @@ function App() {
             const average = sum / dataArray.length;
             const rawVolume = Math.min(average / 100, 1);
 
-            // Gemini-style liquid physics: peak hold and soft decay
-            if (rawVolume > smoothedVolume) {
-              smoothedVolume += (rawVolume - smoothedVolume) * 0.4; // Fast attack
+            // Peak hold logic
+            if (rawVolume > peakVolume) {
+              peakVolume = rawVolume;
+              peakHoldTime = 10; // Frames to hold
+            } else if (peakHoldTime > 0) {
+              peakHoldTime--;
             } else {
-              smoothedVolume += (rawVolume - smoothedVolume) * 0.08; // Smooth, slow decay
+              peakVolume += (rawVolume - peakVolume) * 0.05; // Slow decay
+            }
+
+            // Smooth volume
+            if (peakVolume > smoothedVolume) {
+              smoothedVolume += (peakVolume - smoothedVolume) * 0.4;
+            } else {
+              smoothedVolume += (peakVolume - smoothedVolume) * 0.1;
             }
 
             if (buttonRef.current) {
-              // Only pass the single robust smoothed variable to CSS
-              buttonRef.current.style.setProperty('--vol', smoothedVolume.toFixed(3));
+              const time = Date.now() / 1000;
+              
+              // Apply physics to layers
+              const layerElements = buttonRef.current.children;
+              if (layerElements.length >= 4) {
+                for (let i = 0; i < 4; i++) {
+                  const orb = orbs[i];
+                  
+                  // Calculate target X based on volume (spring flow outwards)
+                  const baseTargetX = orb.targetX * smoothedVolume * 1.2;
+                  
+                  // Add idle breathing motion
+                  const idleOffset = Math.sin(time * orb.idleSpeed) * orb.idleAmp;
+                  const finalTargetX = baseTargetX + idleOffset;
+                  
+                  // Target scale
+                  const finalTargetS = 1 + smoothedVolume * 0.5;
+
+                  // Spring Physics calculation
+                  // Acceleration = Stiffness * (Target - Current) - Damping * Velocity
+                  const accX = orb.stiffness * (finalTargetX - orb.x);
+                  orb.vX = (orb.vX + accX) * orb.damping;
+                  orb.x += orb.vX;
+
+                  const accS = orb.stiffness * (finalTargetS - orb.s);
+                  orb.vS = (orb.vS + accS) * orb.damping;
+                  orb.s += orb.vS;
+
+                  // Apply inline styles for butter-smooth 60fps
+                  layerElements[i].style.transform = `translate(calc(-50% + ${orb.x}px), -50%) scale(${orb.s})`;
+                }
+              }
+
+              // Set container styling for glow and blur dynamically
+              const blurVal = 12 + smoothedVolume * 12;
+              buttonRef.current.style.setProperty('--glow-opacity', 0.2 + smoothedVolume * 0.5);
+              buttonRef.current.style.setProperty('--dynamic-blur', `${blurVal}px`);
+              buttonRef.current.style.boxShadow = `0 0 ${20 + smoothedVolume*40}px rgba(81, 45, 168, ${0.2 + smoothedVolume*0.5})`;
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
@@ -281,10 +339,10 @@ function App() {
               </button>
               
               <div className="voice-glow-btn" ref={buttonRef}>
-                <div className="voice-layer layer-blue"></div>
-                <div className="voice-layer layer-purple"></div>
-                <div className="voice-layer layer-pink"></div>
-                <div className="voice-layer layer-cyan"></div>
+                <div className="voice-layer" style={{ backgroundColor: '#3b82f6', width: '50px', height: '50px' }}></div>
+                <div className="voice-layer" style={{ backgroundColor: '#06b6d4', width: '40px', height: '40px' }}></div>
+                <div className="voice-layer" style={{ backgroundColor: '#8b5cf6', width: '55px', height: '55px' }}></div>
+                <div className="voice-layer" style={{ backgroundColor: '#ec4899', width: '45px', height: '45px' }}></div>
               </div>
               
               <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
