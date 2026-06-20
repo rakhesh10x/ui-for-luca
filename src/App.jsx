@@ -131,7 +131,7 @@ function App() {
               if (paths.length === 3) {
                 const width = 140;
                 const height = 64;
-                const baseY = 58; // Sit extremely low at the bottom edge
+                const baseY = 60; // Idle state is very low
                 
                 // Define 3 waves with different phases and frequency
                 const waves = [
@@ -143,8 +143,8 @@ function App() {
                 waves.forEach((wave, i) => {
                   let d = `M 0 ${height} `;
                   
-                  // Base amplitude (idle) is tiny. Max amplitude is 22px so it NEVER crosses the middle (y=32)
-                  const amplitude = 1.5 + (smoothedVolume * 22 * wave.ampMult);
+                  // Base amplitude is very subtle (1.0). Max amplitude is around 20 so it stays in lower half.
+                  const amplitude = 1.0 + (smoothedVolume * 20 * wave.ampMult);
                   
                   // Calculate points
                   for (let x = 0; x <= width; x += 5) {
@@ -157,8 +157,8 @@ function App() {
                 });
               }
 
-              // Dynamic glow (no scaling, just a soft blue glow behind the pill)
-              buttonRef.current.style.boxShadow = `0 4px ${10 + smoothedVolume*30}px rgba(66, 133, 244, ${0.1 + smoothedVolume*0.3})`;
+              // Dynamic glow (very low in idle, spreads upward slightly)
+              buttonRef.current.style.boxShadow = `0 -2px ${10 + smoothedVolume*20}px rgba(40, 100, 255, ${0.15 + smoothedVolume*0.3})`;
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
@@ -332,21 +332,24 @@ function App() {
                 <svg className="wave-svg" width="140" height="64" viewBox="0 0 140 64" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="waveGrad1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(100, 180, 255, 0.9)" />
-                      <stop offset="100%" stopColor="rgba(40, 100, 255, 0.5)" />
+                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.8)" />
+                      <stop offset="40%" stopColor="rgba(40, 100, 255, 0.9)" />
+                      <stop offset="100%" stopColor="rgba(10, 30, 150, 1)" />
                     </linearGradient>
                     <linearGradient id="waveGrad2" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(180, 220, 255, 0.8)" />
-                      <stop offset="100%" stopColor="rgba(80, 150, 255, 0.4)" />
+                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.6)" />
+                      <stop offset="50%" stopColor="rgba(50, 120, 255, 0.8)" />
+                      <stop offset="100%" stopColor="rgba(15, 40, 160, 1)" />
                     </linearGradient>
                     <linearGradient id="waveGrad3" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(220, 240, 255, 0.7)" />
-                      <stop offset="100%" stopColor="rgba(120, 180, 255, 0.3)" />
+                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.9)" />
+                      <stop offset="30%" stopColor="rgba(60, 140, 255, 0.9)" />
+                      <stop offset="100%" stopColor="rgba(20, 50, 180, 1)" />
                     </linearGradient>
                   </defs>
-                  <path fill="url(#waveGrad1)" opacity="0.6" style={{ filter: 'blur(3px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad2)" opacity="0.7" style={{ filter: 'blur(2px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad3)" opacity="0.8" style={{ filter: 'blur(1px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad1)" opacity="0.7" style={{ filter: 'blur(3px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad2)" opacity="0.8" style={{ filter: 'blur(2px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad3)" opacity="0.9" style={{ filter: 'blur(1px)', mixBlendMode: 'screen' }} />
                 </svg>
               </div>
               
