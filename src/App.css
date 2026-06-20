@@ -491,32 +491,29 @@
   height: 32px;
   border-radius: 50%;
   background: transparent;
-  color: #a1a1aa;
+  color: #71717a; /* Softer, understated gray */
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease; /* Smooth, premium transition */
   border: none;
   outline: none;
   flex-shrink: 0; /* Important so it doesn't get squished by text */
+  opacity: 0.35; /* Subtle idle state */
 }
 
 .speaker-btn svg {
   width: 18px !important;
   height: 18px !important;
-  stroke: #a1a1aa !important; /* Explicitly set the stroke color to light grey */
+  stroke: currentColor !important;
   stroke-width: 2px !important;
   fill: none !important;
   visibility: visible !important;
-  opacity: 1 !important;
   display: block !important;
-  transition: stroke 0.2s ease;
 }
 
 .speaker-btn:hover {
-  background: rgba(255, 255, 255, 0.08); /* Subtle hover effect */
-}
-
-.speaker-btn:hover svg {
-  stroke: #ffffff !important;
+  background: rgba(255, 255, 255, 0.04); /* Very subtle hover circle */
+  color: #a1a1aa; /* Slightly brighter on hover */
+  opacity: 0.8; /* Bring it into focus */
 }
 
 .speaker-btn:active {
