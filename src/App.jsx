@@ -400,7 +400,7 @@ function App() {
             {/* Logo Container for Home Page Only */}
             {!isChatMode && !isVoiceMode && (
               <div className="logo-container fade-in">
-                <img src="logo.png?v=2" alt="LUCA Logo" className="app-logo" />
+                <h1 style={{ color: '#512da8', fontSize: '2.5rem', fontWeight: '800', letterSpacing: '2px', margin: 0 }}>LUCA</h1>
               </div>
             )}
 
