@@ -5,8 +5,8 @@ import { PWABadge } from './components/PWABadge';
 import './index.css';
 import './App.css';
 
-const CAPSULE_WIDTH = 164;
-const CAPSULE_HEIGHT = 72;
+const CAPSULE_WIDTH = 110;
+const CAPSULE_HEIGHT = 48;
 const SURFACE_SAMPLES = 22;
 
 function clamp(value, min, max) {
@@ -68,10 +68,7 @@ function drawLiquidCapsule(canvas, state) {
   const width = CAPSULE_WIDTH;
   const height = CAPSULE_HEIGHT;
   const radius = height / 2;
-  const level = clamp(state.level, 0, 1);
   const glow = clamp(state.glow, 0, 1);
-  const baseY = height * (0.85 - (level * 0.25));
-  const amplitude = 1.0 + (level * 8.0);
   const phase = state.flow;
   const drift = state.drift;
 
@@ -84,76 +81,53 @@ function drawLiquidCapsule(canvas, state) {
   ctx.clip();
 
   const backdrop = ctx.createLinearGradient(0, 0, 0, height);
-  backdrop.addColorStop(0, 'rgba(4, 6, 12, 0.96)');
-  backdrop.addColorStop(0.5, 'rgba(3, 5, 12, 0.98)');
+  backdrop.addColorStop(0, 'rgba(4, 6, 12, 1)');
   backdrop.addColorStop(1, 'rgba(0, 0, 0, 1)');
   ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, width, height);
 
-
-  const surfacePoints = [];
-  for (let index = 0; index <= SURFACE_SAMPLES; index += 1) {
-    const t = index / SURFACE_SAMPLES;
-    const x = t * width;
-    const envelope = Math.pow(Math.sin(Math.PI * t), 0.72);
-    // Single extremely wide rolling mound, thick fluid
-    const slowWave = Math.sin((t * Math.PI * 1.0) - (phase * 2.0));
-    const midWave = Math.sin((t * Math.PI * 2.0) - (phase * 3.0)) * 0.1;
-    const wave = (slowWave + midWave) * envelope;
-    surfacePoints.push({
-      x,
-      y: baseY - (wave * amplitude)
-    });
-  }
-
   ctx.save();
-  ctx.filter = `blur(${12 + (glow * 10)}px)`;
   ctx.globalCompositeOperation = 'screen';
-  ctx.beginPath();
-  ctx.moveTo(0, height);
-  ctx.lineTo(surfacePoints[0].x, surfacePoints[0].y + 3);
-  for (let index = 1; index < surfacePoints.length; index += 1) {
-    const prev = surfacePoints[index - 1];
-    const current = surfacePoints[index];
-    const midX = (prev.x + current.x) / 2;
-    const midY = (prev.y + current.y) / 2;
-    ctx.quadraticCurveTo(prev.x, prev.y + 3, midX, midY + 2);
-  }
-  ctx.lineTo(width, height);
-  ctx.closePath();
-  // Align the 0-opacity stop exactly with the highest point of the wave
-  const softFill = ctx.createLinearGradient(0, baseY - amplitude, 0, height);
-  softFill.addColorStop(0, `rgba(224, 239, 255, 0)`);
-  softFill.addColorStop(0.3, `rgba(99, 153, 255, ${0.1 + (glow * 0.3)})`);
-  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.3 + (glow * 0.5)})`);
-  ctx.fillStyle = softFill;
-  ctx.fill();
+  ctx.filter = `blur(${8 + (glow * 6)}px)`;
+
+  const drawAuroraBlob = (cx, cy, rx, ry, r, g, b, alpha) => {
+    ctx.beginPath();
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+    grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha})`);
+    grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+    ctx.fillStyle = grad;
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+  };
+
+  // Base subtle idle glow at the very bottom
+  const idleAlpha = 0.15 + (glow * 0.4);
+  drawAuroraBlob(width * 0.5, height * 0.9, width * 0.6, height * 0.5, 60, 100, 255, idleAlpha);
+
+  const activeAlpha = 0.05 + (glow * 0.65);
+  
+  // Blob 1: Purple/Indigo, moves left/right and up
+  const cx1 = width * 0.3 + Math.sin(phase * 1.2) * width * 0.2;
+  const cy1 = height * 0.9 - (glow * height * 0.5) + Math.cos(drift * 1.5) * 3;
+  const rx1 = width * 0.4 + (glow * width * 0.2);
+  const ry1 = height * 0.3 + (glow * height * 0.4);
+  drawAuroraBlob(cx1, cy1, rx1, ry1, 140, 60, 255, activeAlpha);
+
+  // Blob 2: Faint Cyan/Light Blue
+  const cx2 = width * 0.7 + Math.sin(phase * 0.9 + 2) * width * 0.2;
+  const cy2 = height * 0.9 - (glow * height * 0.6) + Math.cos(drift * 1.1 + 1) * 3;
+  const rx2 = width * 0.35 + (glow * width * 0.3);
+  const ry2 = height * 0.25 + (glow * height * 0.5);
+  drawAuroraBlob(cx2, cy2, rx2, ry2, 80, 180, 255, activeAlpha * 0.8);
+
+  // Blob 3: Deep Blue center
+  const cx3 = width * 0.5 + Math.sin(phase * 1.5 + 4) * width * 0.1;
+  const cy3 = height * 0.95 - (glow * height * 0.4);
+  const rx3 = width * 0.5 + (glow * width * 0.2);
+  const ry3 = height * 0.3 + (glow * height * 0.3);
+  drawAuroraBlob(cx3, cy3, rx3, ry3, 40, 80, 255, activeAlpha);
+
   ctx.restore();
-
-
-
-  ctx.beginPath();
-  ctx.moveTo(0, height);
-  ctx.lineTo(surfacePoints[0].x, surfacePoints[0].y);
-  for (let index = 1; index < surfacePoints.length; index += 1) {
-    const prev = surfacePoints[index - 1];
-    const current = surfacePoints[index];
-    const midX = (prev.x + current.x) / 2;
-    const midY = (prev.y + current.y) / 2;
-    ctx.quadraticCurveTo(prev.x, prev.y, midX, midY);
-  }
-  ctx.lineTo(width, height);
-  ctx.closePath();
-
-  // Align the 0-opacity stop exactly with the highest point of the wave
-  const liquidFill = ctx.createLinearGradient(0, baseY - amplitude, 0, height);
-  liquidFill.addColorStop(0, `rgba(246, 250, 255, 0)`);
-  liquidFill.addColorStop(0.2, `rgba(182, 217, 255, ${0.2 + (glow * 0.4)})`);
-  liquidFill.addColorStop(0.5, `rgba(92, 150, 255, ${0.4 + (glow * 0.5)})`);
-  liquidFill.addColorStop(1, `rgba(18, 45, 170, ${0.8 + (glow * 0.2)})`);
-  ctx.fillStyle = liquidFill;
-  ctx.fill();
-
   ctx.restore();
 }
 
