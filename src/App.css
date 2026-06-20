@@ -321,9 +321,11 @@
 
 .message.user {
   align-self: flex-end;
-  background-color: #2a2a2a;
+  background-color: #1e1f20; /* Gemini-style dark charcoal grey */
   color: #ffffff;
   border-bottom-right-radius: 0.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle premium depth */
+  border: 1px solid rgba(255, 255, 255, 0.03); /* Extremely subtle edge highlight */
 }
 
 .message.ai {
