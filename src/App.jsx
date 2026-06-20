@@ -131,12 +131,21 @@ function drawLiquidCapsule(canvas, state) {
   ctx.restore();
 }
 
+const thinkingMessages = [
+  "Understanding your question",
+  "Thinking...",
+  "Preparing response",
+  "Almost done"
+];
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   
   const [isChatMode, setIsChatMode] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [thinkingMessageIndex, setThinkingMessageIndex] = useState(0);
   const [messages, setMessages] = useState([]);
   const [transcript, setTranscript] = useState('');
   
@@ -165,6 +174,19 @@ function App() {
       }
     }
   }, []);
+
+  // Handle thinking message cycling
+  useEffect(() => {
+    let interval;
+    if (isThinking) {
+      interval = setInterval(() => {
+        setThinkingMessageIndex(prev => (prev + 1) % thinkingMessages.length);
+      }, 2500);
+    } else {
+      setThinkingMessageIndex(0);
+    }
+    return () => clearInterval(interval);
+  }, [isThinking]);
 
   const handleLogin = (userData) => {
     setUser(userData);
@@ -218,7 +240,6 @@ function App() {
           const source = audioCtx.createMediaStreamSource(stream);
           source.connect(analyser);
           const frequencyData = new Uint8Array(analyser.frequencyBinCount);
-          const timeData = new Float32Array(analyser.fftSize);
           const liquidState = liquidStateRef.current;
           liquidState.lastTime = 0;
 
@@ -231,27 +252,22 @@ function App() {
             
             // 1. Get real microphone volume
             let sum = 0;
-            // Only average the first 100 bins (lower frequencies where voice lives)
-            // to prevent high-frequency silence from dragging down the average.
             const voiceBins = 100; 
             for (let i = 0; i < voiceBins; i++) {
               sum += frequencyData[i];
             }
             const average = sum / voiceBins;
             
-            // Boost sensitivity. Normal speech average is around 20-40.
+            // Boost sensitivity
             const rawVolume = Math.min(average / 40, 1);
 
-            // 2. Smooth it with a low-pass filter EXACTLY as requested:
-            // smoothedVolume += (rawVolume - smoothedVolume) * 0.03
+            // 2. Smooth it
             liquidState.level += (rawVolume - liquidState.level) * 0.03;
             
-            // Link glow directly to the smoothed volume
+            // Link glow
             liquidState.glow = Math.min(liquidState.level * 1.2, 1);
 
             // 3. Use smoothed volume to control speed
-            // When idle (level=0), it should move extremely slowly (0.01)
-            // When shouting (level=1), it hits 0.6 (calm but active)
             liquidState.flow += dt * (0.01 + (liquidState.level * 0.6));
             liquidState.drift += dt * (0.005 + (liquidState.glow * 0.5));
 
@@ -296,6 +312,7 @@ function App() {
     
     setIsVoiceMode(false);
     setIsChatMode(true);
+    setIsThinking(true);
     
     const userMessage = transcript.trim() ? transcript : "Hello, how are you?";
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
@@ -312,7 +329,8 @@ function App() {
 
     setTimeout(() => {
       setMessages(prev => [...prev, { role: 'ai', content: aiResponse }]);
-    }, 600);
+      setIsThinking(false);
+    }, 8000); // Increased latency to 8 seconds
   };
 
   const handleVoiceCancel = () => {
@@ -323,7 +341,7 @@ function App() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isThinking]);
 
   useEffect(() => {
     drawLiquidCapsule(canvasRef.current, liquidStateRef.current);
@@ -417,10 +435,34 @@ function App() {
         {isChatMode && !isVoiceMode && (
           <div className="chat-history">
             {messages.map((msg, idx) => (
-              <div key={idx} className={`message ${msg.role}`}>
-                {msg.content}
+              <div key={idx} className={`chat-message ${msg.role}`}>
+                <div className="message-content fade-in">
+                  {msg.content}
+                </div>
               </div>
             ))}
+            
+            {/* Thinking State */}
+            {isThinking && (
+              <div className="thinking-container fade-in">
+                <div className="thinking-dots">
+                  <div className="gemini-dot dot-1"></div>
+                  <div className="gemini-dot dot-2"></div>
+                  <div className="gemini-dot dot-3"></div>
+                </div>
+                <div className="thinking-text-container">
+                  {thinkingMessages.map((msg, idx) => (
+                    <span 
+                      key={idx} 
+                      className={`thinking-text ${idx === thinkingMessageIndex ? 'active' : ''}`}
+                    >
+                      {msg}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
         )}
