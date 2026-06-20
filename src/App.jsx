@@ -128,12 +128,15 @@ function App() {
             if (buttonRef.current) {
               // Generate SVG Paths for the waves
               const paths = buttonRef.current.querySelectorAll('path');
-              if (paths.length === 5) { // Changed to 5 layers for thick fog effect
+              if (paths.length === 5) {
                 const width = 140;
                 const height = 64;
-                const baseY = 40; // Base sits around lower half
                 
-                // Very low frequencies (0.02 - 0.04) to ensure only 1-2 ultra-wide gentle swells
+                // Dynamic water level: 
+                // Idle = 52 (bottom 20%), Speaking = 34 (bottom 50%)
+                const baseY = 52 - (smoothedVolume * 18); 
+                
+                // Keep frequency low for gentle swells, not mountains
                 const waves = [
                   { speedMult: 1.5, freq: 0.02, ampMult: 0.8, offset: 0 },
                   { speedMult: 1.0, freq: 0.03, ampMult: 1.0, offset: 2.0 },
@@ -145,8 +148,8 @@ function App() {
                 waves.forEach((wave, i) => {
                   let d = `M 0 ${height} `;
                   
-                  // Amplitude reduced by 80%. Max amplitude is around 3-4px so vertical movement is tiny.
-                  const amplitude = 0.5 + (smoothedVolume * 4 * wave.ampMult);
+                  // Amplitude: Idle = 1.0 (flat), Speaking = 7 (smooth rolling waves)
+                  const amplitude = 1.0 + (smoothedVolume * 6 * wave.ampMult);
                   
                   // Calculate points across the X axis
                   for (let x = 0; x <= width; x += 5) {
@@ -159,8 +162,8 @@ function App() {
                 });
               }
 
-              // Dynamic glow behind the pill (extremely soft)
-              buttonRef.current.style.boxShadow = `0 -2px ${10 + smoothedVolume*15}px rgba(40, 100, 255, ${0.1 + smoothedVolume*0.2})`;
+              // Dynamic glow behind the pill
+              buttonRef.current.style.boxShadow = `0 -2px ${10 + smoothedVolume*20}px rgba(40, 100, 255, ${0.1 + smoothedVolume*0.3})`;
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
