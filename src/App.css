@@ -117,13 +117,13 @@
 }
 
 .app-logo {
-  width: 230px; /* Desktop: 200-260px */
+  width: 380px; /* Desktop */
   object-fit: contain;
 }
 
 @media (max-width: 768px) {
   .app-logo {
-    width: 160px; /* Mobile: 140-180px */
+    width: 250px; /* Mobile */
   }
 }
 
