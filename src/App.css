@@ -104,6 +104,30 @@
   text-align: center;
 }
 
+/* Home Page Logo */
+.logo-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  width: 100%;
+}
+
+.app-logo {
+  width: 230px; /* Desktop: 200-260px */
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .app-logo {
+    width: 160px; /* Mobile: 140-180px */
+  }
+}
+
 /* Bottom Search Bar */
 .bottom-bar-container {
   position: fixed;
