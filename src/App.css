@@ -497,6 +497,7 @@
   border: none;
   outline: none;
   flex-shrink: 0;
+  opacity: 0.5; /* Reduce visibility per user request */
 }
 
 .speaker-btn svg {
@@ -508,7 +509,7 @@
 
 .speaker-btn:hover {
   background: rgba(255, 255, 255, 0.08); /* Original subtle hover */
-  color: #ffffff; /* Bright white on hover */
+  opacity: 1; /* Brighten on hover */
 }
 
 .speaker-btn:active {
