@@ -404,11 +404,11 @@ function App() {
           </div>
         )}
 
-        {/* Center Content for Voice Mode */}
-        {isVoiceMode && (
+        {/* Center Content for Home and Voice Mode */}
+        {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
             <h1 className="welcome-text fade-in-text">
-              {transcript || 'Listening...'}
+              {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
             </h1>
           </div>
         )}
