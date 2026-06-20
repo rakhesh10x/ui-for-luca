@@ -248,6 +248,14 @@
   opacity: 0;
 }
 
+/* Hidden state for persistent home components */
+.hidden-home {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
 /* Chat Mode Styles */
 .chat-mode {
   justify-content: flex-start;
@@ -290,7 +298,7 @@
 }
 
 /* Chat Mode Specific overrides to hide scrolling text underneath the search bar */
-.chat-mode .bottom-bar-container {
+.chat-mode .bottom-dock {
   z-index: 10;
   /* ChatGPT/Gemini style bottom fade so text doesn't peek below or around the bar */
   background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.6) 25%, #000000 60%);

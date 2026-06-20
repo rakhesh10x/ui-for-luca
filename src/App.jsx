@@ -387,7 +387,7 @@ function App() {
 
   return (
     <>
-      <main className={`app-main ${isChatMode ? 'chat-mode' : 'fade-in'}`}>
+      <main className={`app-main ${isChatMode ? 'chat-mode' : ''}`}>
         
         {/* Premium Background Layers */}
         <div className="ambient-background">
@@ -399,12 +399,10 @@ function App() {
         {/* Starfield Background */}
         <Starfield isFullScreen={isChatMode || isVoiceMode} />
 
-        {/* Global Top Logo (Shows on Login and Home Pages) */}
-        {(!isLoggedIn || (!isChatMode && !isVoiceMode)) && (
-          <div className="logo-container fade-in">
-            <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
-          </div>
-        )}
+        {/* Global Top Logo (Persistent DOM) */}
+        <div className={`logo-container fade-in ${isLoggedIn && (isChatMode || isVoiceMode) ? 'hidden-home' : ''}`}>
+          <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
+        </div>
 
         {!isLoggedIn ? (
           <LoginPage onLogin={handleLogin} />
@@ -425,14 +423,12 @@ function App() {
 
 
 
-            {/* Center Content for Home and Voice Mode */}
-        {(!isChatMode || isVoiceMode) && (
-          <div className="center-content">
-            <h1 className="welcome-text fade-in-text">
-              {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
-            </h1>
-          </div>
-        )}
+        {/* Center Content for Home and Voice Mode (Persistent DOM) */}
+        <div className={`center-content ${isLoggedIn && isChatMode && !isVoiceMode ? 'hidden-home' : ''}`}>
+          <h1 className="welcome-text fade-in-text">
+            {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
+          </h1>
+        </div>
 
         {/* Chat History */}
         {isChatMode && !isVoiceMode && (
