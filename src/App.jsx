@@ -14,6 +14,8 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [transcript, setTranscript] = useState('');
   
+  const wasSecondaryRef = useRef(false);
+  
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const buttonRef = useRef(null);
@@ -170,6 +172,43 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // History Management for Back Button
+  useEffect(() => {
+    const isSecondary = isChatMode || isVoiceMode;
+    if (isSecondary && !wasSecondaryRef.current) {
+      window.history.pushState({ page: 'secondary' }, '');
+    }
+    wasSecondaryRef.current = isSecondary;
+  }, [isChatMode, isVoiceMode]);
+
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (isChatMode || isVoiceMode) {
+        setIsChatMode(false);
+        setIsVoiceMode(false);
+        setTranscript('');
+        if (recognitionRef.current) {
+          try { recognitionRef.current.stop(); } catch(err) {}
+        }
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isChatMode, isVoiceMode]);
+
+  const handleBackButtonClick = () => {
+    if (window.history.state && window.history.state.page === 'secondary') {
+      window.history.back();
+    } else {
+      setIsChatMode(false);
+      setIsVoiceMode(false);
+      setTranscript('');
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(err) {}
+      }
+    }
+  };
+
   return (
     <>
       <main className={`app-main ${isChatMode ? 'chat-mode' : 'fade-in'}`}>
@@ -188,6 +227,19 @@ function App() {
           <LoginPage onLogin={handleLogin} />
         ) : (
           <>
+            {/* Back Button */}
+            {(isChatMode || isVoiceMode) && (
+              <button 
+                className="back-btn fade-in" 
+                onClick={handleBackButtonClick}
+                aria-label="Go Back"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+            )}
+
             {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
