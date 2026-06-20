@@ -130,28 +130,7 @@ function drawLiquidCapsule(canvas, state) {
   ctx.fill();
   ctx.restore();
 
-  for (const blob of state.blobs) {
-    const travel = (blob.offset + (phase * blob.speed * 0.08)) % 1;
-    const x = travel * width;
-    const y = baseY + ((height - baseY) * (0.16 + (blob.depth * 0.72)));
-    const radiusX = 20 + (blob.size * 12) + (glow * 12);
-    const radiusY = 8 + (blob.size * 5) + (glow * 5);
 
-    ctx.save();
-    ctx.globalCompositeOperation = 'screen';
-    ctx.filter = `blur(${8 + (blob.size * 4)}px)`;
-    ctx.translate(x, y);
-    ctx.scale(1 + (level * 0.18), 1);
-    const blobGradient = ctx.createRadialGradient(0, -radiusY * 0.3, 2, 0, 0, radiusX);
-    blobGradient.addColorStop(0, `rgba(255, 255, 255, ${0.1 + (glow * 0.45)})`);
-    blobGradient.addColorStop(0.42, `rgba(147, 199, 255, ${0.12 + (glow * 0.45)})`);
-    blobGradient.addColorStop(1, 'rgba(26, 64, 216, 0)');
-    ctx.fillStyle = blobGradient;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, radiusX, radiusY, Math.sin(phase + blob.phase) * 0.12, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
 
   ctx.beginPath();
   ctx.moveTo(0, height);
