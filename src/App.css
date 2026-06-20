@@ -491,31 +491,32 @@
   height: 32px;
   border-radius: 50%;
   background: transparent;
-  color: #a1a1aa; /* Subtle gray */
+  color: #a1a1aa;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
   outline: none;
-  flex-shrink: 0;
-  opacity: 1 !important; /* Force opacity to 1 so the base color does the work */
+  flex-shrink: 0; /* Important so it doesn't get squished by text */
 }
 
 .speaker-btn svg {
   width: 18px !important;
   height: 18px !important;
-  stroke: #a1a1aa !important; /* Explicitly force subtle gray stroke */
+  stroke: #71717a !important; /* Extremely soft gray stroke */
   stroke-width: 2px !important;
   fill: none !important;
   visibility: visible !important;
+  opacity: 1 !important;
   display: block !important;
+  transition: stroke 0.2s ease;
 }
 
 .speaker-btn:hover {
-  background: rgba(255, 255, 255, 0.08); /* Subtle hover */
+  background: rgba(255, 255, 255, 0.08); /* Subtle hover effect */
 }
 
 .speaker-btn:hover svg {
-  stroke: #ffffff !important; /* Brighten on hover */
+  stroke: #ffffff !important;
 }
 
 .speaker-btn:active {
