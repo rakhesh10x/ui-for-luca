@@ -91,8 +91,8 @@ function drawLiquidCapsule(canvas, state) {
   ctx.fillRect(0, 0, width, height);
 
   const glowGradient = ctx.createRadialGradient(width * 0.5, height * 0.74, 4, width * 0.5, height * 0.74, width * 0.48);
-  glowGradient.addColorStop(0, `rgba(115, 168, 255, ${0.08 + (glow * 0.14)})`);
-  glowGradient.addColorStop(0.55, `rgba(58, 104, 255, ${0.11 + (glow * 0.14)})`);
+  glowGradient.addColorStop(0, `rgba(115, 168, 255, ${0.4 + (glow * 0.5)})`);
+  glowGradient.addColorStop(0.55, `rgba(58, 104, 255, ${0.3 + (glow * 0.5)})`);
   glowGradient.addColorStop(1, 'rgba(9, 14, 38, 0)');
   ctx.fillStyle = glowGradient;
   ctx.fillRect(0, 0, width, height);
@@ -129,9 +129,9 @@ function drawLiquidCapsule(canvas, state) {
   ctx.lineTo(width, height);
   ctx.closePath();
   const softFill = ctx.createLinearGradient(0, baseY - 10, 0, height);
-  softFill.addColorStop(0, `rgba(224, 239, 255, ${0.2 + (glow * 0.16)})`);
-  softFill.addColorStop(0.28, `rgba(99, 153, 255, ${0.3 + (glow * 0.18)})`);
-  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.55 + (glow * 0.14)})`);
+  softFill.addColorStop(0, `rgba(224, 239, 255, ${0.45 + (glow * 0.3)})`);
+  softFill.addColorStop(0.28, `rgba(99, 153, 255, ${0.55 + (glow * 0.35)})`);
+  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.8 + (glow * 0.2)})`);
   ctx.fillStyle = softFill;
   ctx.fill();
   ctx.restore();
@@ -149,8 +149,8 @@ function drawLiquidCapsule(canvas, state) {
     ctx.translate(x, y);
     ctx.scale(1 + (level * 0.18), 1);
     const blobGradient = ctx.createRadialGradient(0, -radiusY * 0.3, 2, 0, 0, radiusX);
-    blobGradient.addColorStop(0, `rgba(255, 255, 255, ${0.1 + (glow * 0.14)})`);
-    blobGradient.addColorStop(0.42, `rgba(147, 199, 255, ${0.11 + (glow * 0.18)})`);
+    blobGradient.addColorStop(0, `rgba(255, 255, 255, ${0.25 + (glow * 0.4)})`);
+    blobGradient.addColorStop(0.42, `rgba(147, 199, 255, ${0.3 + (glow * 0.4)})`);
     blobGradient.addColorStop(1, 'rgba(26, 64, 216, 0)');
     ctx.fillStyle = blobGradient;
     ctx.beginPath();
@@ -213,8 +213,10 @@ function App() {
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const buttonRef = useRef(null);
+  const canvasRef = useRef(null);
   const audioCtxRef = useRef(null);
   const animationFrameRef = useRef(null);
+  const liquidStateRef = useRef(createLiquidState());
 
   // Check localStorage for existing session
   useEffect(() => {
@@ -279,74 +281,61 @@ function App() {
           const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
           audioCtxRef.current = audioCtx;
           const analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 256;
+          analyser.fftSize = 1024;
+          analyser.smoothingTimeConstant = 0.08;
           const source = audioCtx.createMediaStreamSource(stream);
           source.connect(analyser);
-          const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-          // Spring physics for volume
-          let smoothedVolume = 0;
-          let waveTime = 0; // Custom time accumulator for variable speed
+          const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+          const timeData = new Float32Array(analyser.fftSize);
+          const liquidState = liquidStateRef.current;
+          liquidState.lastTime = 0;
 
           const renderFrame = () => {
-            analyser.getByteFrequencyData(dataArray);
-            let sum = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-              sum += dataArray[i];
-            }
-            const average = sum / dataArray.length;
-            const rawVolume = Math.min(average / 100, 1);
+            const now = performance.now();
+            const dt = liquidState.lastTime ? Math.min((now - liquidState.lastTime) / 1000, 0.04) : (1 / 60);
+            liquidState.lastTime = now;
 
-            // In the video, the swell is very slow to rise and EXTREMELY slow to fall
-            if (rawVolume > smoothedVolume) {
-              smoothedVolume += (rawVolume - smoothedVolume) * 0.08; // Smooth rise
-            } else {
-              smoothedVolume += (rawVolume - smoothedVolume) * 0.015; // Very heavy damping for slow decay
+            analyser.getByteFrequencyData(frequencyData);
+            analyser.getFloatTimeDomainData(timeData);
+
+            let frequencySum = 0;
+            for (let i = 0; i < frequencyData.length; i++) {
+              frequencySum += frequencyData[i];
             }
 
-            // Time flow is very slow, creating a "breathing" effect rather than flowing water
-            waveTime += 0.01 + (smoothedVolume * 0.02);
+            let squareSum = 0;
+            let peak = 0;
+            for (let i = 0; i < timeData.length; i++) {
+              const sample = timeData[i];
+              squareSum += sample * sample;
+              peak = Math.max(peak, Math.abs(sample));
+            }
+
+            const rms = Math.sqrt(squareSum / timeData.length);
+            const spectral = frequencySum / (frequencyData.length * 255);
+            const activity = clamp(((rms - 0.018) * 9.5) + (peak * 0.45) + (spectral * 0.3), 0, 1);
+            if (activity > 0.07) {
+              liquidState.holdUntil = now + 170;
+            }
+
+            const held = liquidState.holdUntil > now;
+            const targetLevel = held ? clamp((activity * 0.9) + 0.1, 0, 1) : clamp(activity * 0.6, 0, 1);
+            const targetGlow = held ? clamp((activity * 0.85) + 0.18, 0, 1) : clamp(activity * 0.45, 0, 1);
+
+            stepSpring(liquidState, 'level', 'levelVelocity', targetLevel, 18, held ? 6.5 : 8.2, dt);
+            stepSpring(liquidState, 'glow', 'glowVelocity', targetGlow, 16, held ? 7 : 9.4, dt);
+            liquidState.flow += dt * (0.9 + (liquidState.level * 2.1));
+            liquidState.drift += dt * (0.45 + (liquidState.glow * 0.8));
 
             if (buttonRef.current) {
-              // Generate SVG Paths for the waves
-              const paths = buttonRef.current.querySelectorAll('path');
-              if (paths.length === 4) { // Use 4 layers for rich, blended plasma
-                const width = 140;
-                const height = 64;
-                
-                // Dynamic water level: Idle is very low, speaking rises smoothly
-                const baseY = 58 - (smoothedVolume * 20); 
-                
-                // Frequencies set for 1-2 gentle curves across the pill
-                const waves = [
-                  { speedMult: 1.0, freq: 0.05, ampMult: 1.0, offset: 0 },
-                  { speedMult: 0.8, freq: 0.06, ampMult: 0.8, offset: 2.0 },
-                  { speedMult: 1.2, freq: 0.04, ampMult: 1.2, offset: 4.0 },
-                  { speedMult: 0.9, freq: 0.07, ampMult: 0.9, offset: 1.0 }
-                ];
-
-                waves.forEach((wave, i) => {
-                  let d = `M 0 ${height} `;
-                  
-                  // Gentle amplitude so it looks like swells, not mountains
-                  const amplitude = 1.5 + (smoothedVolume * 8 * wave.ampMult);
-                  
-                  // Calculate points across the X axis
-                  for (let x = 0; x <= width; x += 5) {
-                    const y = baseY - Math.sin(x * wave.freq + waveTime * wave.speedMult + wave.offset) * amplitude;
-                    d += `L ${x} ${y} `;
-                  }
-                  
-                  d += `L ${width} ${height} Z`;
-                  paths[i].setAttribute('d', d);
-                });
-              }
-
-              // Dynamic glow behind the pill
-              buttonRef.current.style.boxShadow = `0 -2px ${10 + smoothedVolume*25}px rgba(40, 150, 255, ${0.1 + smoothedVolume*0.4})`;
+              buttonRef.current.style.boxShadow = `0 0 ${14 + (liquidState.glow * 20)}px rgba(71, 118, 255, ${0.08 + (liquidState.glow * 0.22)}), 0 10px 24px rgba(0, 0, 0, 0.45)`;
             }
+
+            drawLiquidCapsule(canvasRef.current, liquidState);
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
+
+          drawLiquidCapsule(canvasRef.current, liquidState);
           renderFrame();
         })
         .catch(err => console.error('Mic access denied for viz', err));
@@ -359,6 +348,8 @@ function App() {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      liquidStateRef.current = createLiquidState();
+      drawLiquidCapsule(canvasRef.current, liquidStateRef.current);
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
         audioCtxRef.current.close();
       }
@@ -405,6 +396,10 @@ function App() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    drawLiquidCapsule(canvasRef.current, liquidStateRef.current);
+  }, []);
 
   // History Management for Back Button
   useEffect(() => {
@@ -512,27 +507,17 @@ function App() {
               <button className="voice-btn" aria-label="Cancel" onClick={handleVoiceCancel}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
-              
+               
               <div className="voice-glow-btn" ref={buttonRef}>
-                <svg className="wave-svg" width="140" height="64" viewBox="0 0 140 64" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="waveGrad1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.9)" />
-                      <stop offset="40%" stopColor="rgba(60, 180, 255, 0.8)" />
-                      <stop offset="100%" stopColor="rgba(10, 40, 150, 0.9)" />
-                    </linearGradient>
-                    <linearGradient id="waveGrad2" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(200, 240, 255, 0.8)" />
-                      <stop offset="50%" stopColor="rgba(80, 150, 255, 0.7)" />
-                      <stop offset="100%" stopColor="rgba(20, 50, 160, 0.9)" />
-                    </linearGradient>
-                  </defs>
-                  {/* Heavy blur to create a soft, misty plasma flow */}
-                  <path fill="url(#waveGrad1)" opacity="0.6" style={{ filter: 'blur(10px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad2)" opacity="0.7" style={{ filter: 'blur(8px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad1)" opacity="0.8" style={{ filter: 'blur(6px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad2)" opacity="0.9" style={{ filter: 'blur(4px)', mixBlendMode: 'screen' }} />
-                </svg>
+                <canvas
+                  ref={canvasRef}
+                  className="liquid-canvas"
+                  width={CAPSULE_WIDTH}
+                  height={CAPSULE_HEIGHT}
+                  aria-hidden="true"
+                />
+                <div className="voice-capsule-glass"></div>
+                <div className="voice-capsule-rim"></div>
               </div>
               
               <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
