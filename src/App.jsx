@@ -305,21 +305,18 @@ function App() {
             const average = sum / frequencyData.length;
             const rawVolume = Math.min(average / 100, 1);
 
-            // 2. Smooth it with a low-pass filter as requested
-            // Attack is slightly faster, decay is very slow for inertia
-            if (rawVolume > liquidState.level) {
-              liquidState.level += (rawVolume - liquidState.level) * 0.08; 
-            } else {
-              liquidState.level += (rawVolume - liquidState.level) * 0.02; 
-            }
+            // 2. Smooth it with a low-pass filter EXACTLY as requested:
+            // smoothedVolume += (rawVolume - smoothedVolume) * 0.05
+            liquidState.level += (rawVolume - liquidState.level) * 0.05;
             
             // Link glow directly to the smoothed volume
             liquidState.glow = Math.min(liquidState.level * 1.2, 1);
 
             // 3. Use smoothed volume to control speed
-            // When idle (level=0), it should move extremely slowly
-            liquidState.flow += dt * (0.1 + (liquidState.level * 4.0));
-            liquidState.drift += dt * (0.05 + (liquidState.glow * 1.5));
+            // When idle (level=0), it should move extremely slowly (0.02)
+            // When shouting (level=1), it hits 5.0 (highly energetic)
+            liquidState.flow += dt * (0.02 + (liquidState.level * 5.0));
+            liquidState.drift += dt * (0.01 + (liquidState.glow * 2.0));
 
             if (buttonRef.current) {
               buttonRef.current.style.boxShadow = `0 0 ${14 + (liquidState.glow * 20)}px rgba(71, 118, 255, ${0.08 + (liquidState.glow * 0.22)}), 0 10px 24px rgba(0, 0, 0, 0.45)`;
