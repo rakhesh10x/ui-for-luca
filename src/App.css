@@ -478,12 +478,12 @@
   height: 32px;
   border-radius: 50%;
   background: transparent;
-  color: var(--text-muted, #a1a1aa);
+  color: #a1a1aa;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  opacity: 0; /* Starts hidden until messageAppear animation */
-  animation-delay: 0.2s; /* Slight delay after message text */
+  border: none;
+  outline: none;
 }
 
 .speaker-btn:hover {
