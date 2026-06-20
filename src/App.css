@@ -107,8 +107,8 @@
 /* Home Page Logo */
 .logo-container {
   position: absolute;
-  top: 40px;
-  left: 50%;
+  top: 25px;
+  left: calc(50% - 20px);
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
