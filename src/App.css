@@ -489,15 +489,23 @@
 }
 
 .speaker-btn svg {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
+  width: 18px !important;
+  height: 18px !important;
+  stroke: #a1a1aa !important; /* Explicitly set the stroke color to light grey */
+  stroke-width: 2px !important;
+  fill: none !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
   transition: stroke 0.2s ease;
 }
 
 .speaker-btn:hover {
   background: rgba(255, 255, 255, 0.08); /* Subtle hover effect */
-  color: #ffffff;
+}
+
+.speaker-btn:hover svg {
+  stroke: #ffffff !important;
 }
 
 .speaker-btn:active {
