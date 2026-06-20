@@ -400,7 +400,14 @@ function App() {
         <Starfield isFullScreen={isChatMode || isVoiceMode} />
 
         {/* Global Top Logo (Persistent DOM) */}
-        <div className={`logo-container fade-in ${isLoggedIn && (isChatMode || isVoiceMode) ? 'hidden-home' : ''}`}>
+        <div 
+          className="logo-container fade-in"
+          style={{
+            opacity: isLoggedIn && (isChatMode || isVoiceMode) ? 0 : 1,
+            pointerEvents: isLoggedIn && (isChatMode || isVoiceMode) ? 'none' : 'auto',
+            transition: 'opacity 0.3s ease'
+          }}
+        >
           <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
         </div>
 
@@ -424,7 +431,14 @@ function App() {
 
 
         {/* Center Content for Home and Voice Mode (Persistent DOM) */}
-        <div className={`center-content ${isLoggedIn && isChatMode && !isVoiceMode ? 'hidden-home' : ''}`}>
+        <div 
+          className="center-content"
+          style={{
+            opacity: isLoggedIn && isChatMode && !isVoiceMode ? 0 : 1,
+            pointerEvents: isLoggedIn && isChatMode && !isVoiceMode ? 'none' : 'auto',
+            transition: 'opacity 0.3s ease'
+          }}
+        >
           <h1 className="welcome-text fade-in-text">
             {isVoiceMode ? (transcript || 'Listening...') : 'Welcome'}
           </h1>
