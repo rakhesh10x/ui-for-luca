@@ -142,23 +142,24 @@
   }
 }
 
-/* Bottom Search Bar */
-.bottom-bar-container {
+/* Universal Permanent Bottom Dock System */
+.bottom-dock {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  /* Huge spacing mimicking Gemini's spacious bottom area */
+  /* Master Reference Padding - never changes on any screen size */
   padding: 4rem 1.5rem calc(3rem + env(safe-area-inset-bottom, 1rem)) 1.5rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* All content anchors to the bottom inside the dock */
+  z-index: 100; /* Highest z-index to stay above everything */
+  pointer-events: none; /* Container is invisible to clicks */
 }
 
-/* Home Page Specific Mobile Override */
-@media (max-width: 768px) {
-  .app-main:not(.chat-mode) .bottom-bar-container {
-    padding-bottom: calc(3rem + env(safe-area-inset-bottom, 16px));
-  }
+.bottom-dock > * {
+  pointer-events: auto; /* Buttons inside the dock are clickable */
 }
 
 .search-bar {
@@ -615,24 +616,7 @@ body:has(.chat-mode),
   z-index: -1;
 }
 
-/* AI Voice Container & Layout */
-.voice-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 4rem 1.5rem calc(3rem + env(safe-area-inset-bottom, 1rem)) 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  z-index: 50;
-  pointer-events: none; /* Let clicks pass through the invisible full-width container */
-}
-
-.voice-container > * {
-  pointer-events: auto; /* Re-enable clicks on the actual buttons and UI inside */
-}
+/* AI Voice Layout */
 
 .ai-voice-ui {
   display: flex;

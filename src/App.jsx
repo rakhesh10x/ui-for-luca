@@ -470,7 +470,7 @@ function App() {
 
         {/* Bottom Search Bar (Always acts as a voice button) */}
         {!isVoiceMode && (
-          <div className="bottom-bar-container slide-up">
+          <div className="bottom-dock slide-up">
             <div className={`search-bar ${isChatMode && isThinking ? 'locked' : ''}`} onClick={handleOpenChat}>
               <span className="placeholder-text">Ask LUCA</span>
             </div>
@@ -479,7 +479,7 @@ function App() {
 
         {/* Voice Bottom Controls */}
         {isVoiceMode && (
-          <div className="voice-container slide-up">
+          <div className="bottom-dock slide-up">
             <div className="voice-bottom-controls">
               <button className="voice-btn" aria-label="Cancel" onClick={handleVoiceCancel}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>

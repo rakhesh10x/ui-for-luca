@@ -55,7 +55,7 @@ const LoginPage = ({ onLogin }) => {
       <div className="login-card">
         <h1 className="login-title">Welcome</h1>
         
-        <form onSubmit={handleSubmit} className="login-form">
+        <form id="luca-login-form" onSubmit={handleSubmit} className="login-form">
           <div className="login-field">
             <label htmlFor="fullName">FULL NAME *</label>
             <input
@@ -93,15 +93,19 @@ const LoginPage = ({ onLogin }) => {
               className="login-input"
             />
           </div>
-
-          <button 
-            type="submit" 
-            className="login-submit-btn"
-            disabled={!isValid}
-          >
-            Login
-          </button>
         </form>
+      </div>
+
+      {/* Universal Bottom Dock */}
+      <div className="bottom-dock slide-up">
+        <button 
+          type="submit" 
+          form="luca-login-form"
+          className="login-submit-btn"
+          disabled={!isValid}
+        >
+          Login
+        </button>
       </div>
     </div>
   );
