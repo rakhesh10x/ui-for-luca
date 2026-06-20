@@ -107,14 +107,13 @@
 /* Home Page Logo */
 .logo-container {
   position: absolute;
-  top: 50%;
+  top: 40px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 5;
-  width: 100%;
 }
 
 .app-logo {
