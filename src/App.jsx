@@ -70,8 +70,8 @@ function drawLiquidCapsule(canvas, state) {
   const radius = height / 2;
   const level = clamp(state.level, 0, 1);
   const glow = clamp(state.glow, 0, 1);
-  const baseY = height * (0.67 - (level * 0.13));
-  const amplitude = 1.15 + (level * 4.8);
+  const baseY = height * (0.85 - (level * 0.15));
+  const amplitude = 1.0 + (level * 3.5);
   const phase = state.flow;
   const drift = state.drift;
 
@@ -96,19 +96,18 @@ function drawLiquidCapsule(canvas, state) {
     const t = index / SURFACE_SAMPLES;
     const x = t * width;
     const envelope = Math.pow(Math.sin(Math.PI * t), 0.72);
-    const slowWave = Math.sin((t * Math.PI * 1.85) - (phase * 1.7) + 0.35);
-    const midWave = Math.sin((t * Math.PI * 3.2) - (phase * 2.85) + 1.1);
-    const detailWave = Math.sin((t * Math.PI * 5.2) - (phase * 4.4) + 2.5);
-    const tilt = Math.sin((phase * 0.78) + drift) * (t - 0.5) * level * 4.5;
-    const wave = ((slowWave * 0.62) + (midWave * 0.28) + (detailWave * 0.1)) * envelope;
+    // Single wide rolling mound, thick fluid
+    const slowWave = Math.sin((t * Math.PI * 1.5) - (phase * 1.5));
+    const midWave = Math.sin((t * Math.PI * 2.5) - (phase * 2.0)) * 0.15;
+    const wave = (slowWave + midWave) * envelope;
     surfacePoints.push({
       x,
-      y: baseY - (wave * amplitude) - tilt
+      y: baseY - (wave * amplitude)
     });
   }
 
   ctx.save();
-  ctx.filter = `blur(${5 + (glow * 8)}px)`;
+  ctx.filter = `blur(${12 + (glow * 10)}px)`;
   ctx.globalCompositeOperation = 'screen';
   ctx.beginPath();
   ctx.moveTo(0, height);
@@ -122,10 +121,10 @@ function drawLiquidCapsule(canvas, state) {
   }
   ctx.lineTo(width, height);
   ctx.closePath();
-  const softFill = ctx.createLinearGradient(0, baseY - 10, 0, height);
-  softFill.addColorStop(0, `rgba(224, 239, 255, ${0.15 + (glow * 0.35)})`);
-  softFill.addColorStop(0.28, `rgba(99, 153, 255, ${0.25 + (glow * 0.45)})`);
-  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.45 + (glow * 0.4)})`);
+  const softFill = ctx.createLinearGradient(0, baseY - 20, 0, height);
+  softFill.addColorStop(0, `rgba(224, 239, 255, 0)`);
+  softFill.addColorStop(0.3, `rgba(99, 153, 255, ${0.1 + (glow * 0.3)})`);
+  softFill.addColorStop(1, `rgba(20, 48, 170, ${0.3 + (glow * 0.5)})`);
   ctx.fillStyle = softFill;
   ctx.fill();
   ctx.restore();
@@ -145,11 +144,11 @@ function drawLiquidCapsule(canvas, state) {
   ctx.lineTo(width, height);
   ctx.closePath();
 
-  const liquidFill = ctx.createLinearGradient(0, baseY - 12, 0, height);
-  liquidFill.addColorStop(0, `rgba(246, 250, 255, ${0.25 + (glow * 0.3)})`);
-  liquidFill.addColorStop(0.12, `rgba(182, 217, 255, ${0.35 + (glow * 0.35)})`);
-  liquidFill.addColorStop(0.4, `rgba(92, 150, 255, ${0.5 + (glow * 0.35)})`);
-  liquidFill.addColorStop(1, 'rgba(18, 45, 170, 0.8)');
+  const liquidFill = ctx.createLinearGradient(0, baseY - 15, 0, height);
+  liquidFill.addColorStop(0, `rgba(246, 250, 255, 0)`);
+  liquidFill.addColorStop(0.2, `rgba(182, 217, 255, ${0.2 + (glow * 0.4)})`);
+  liquidFill.addColorStop(0.5, `rgba(92, 150, 255, ${0.4 + (glow * 0.5)})`);
+  liquidFill.addColorStop(1, `rgba(18, 45, 170, ${0.8 + (glow * 0.2)})`);
   ctx.fillStyle = liquidFill;
   ctx.fill();
 
@@ -276,8 +275,8 @@ function App() {
 
             // 3. Use smoothed volume to control speed
             // When idle (level=0), it should move extremely slowly (0.01)
-            // When shouting (level=1), it hits 1.5 (calm but active)
-            liquidState.flow += dt * (0.01 + (liquidState.level * 1.5));
+            // When shouting (level=1), it hits 0.6 (calm but active)
+            liquidState.flow += dt * (0.01 + (liquidState.level * 0.6));
             liquidState.drift += dt * (0.005 + (liquidState.glow * 0.5));
 
             if (buttonRef.current) {
