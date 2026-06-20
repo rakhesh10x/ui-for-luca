@@ -399,6 +399,13 @@ function App() {
         {/* Starfield Background */}
         <Starfield isFullScreen={isChatMode || isVoiceMode} />
 
+        {/* Global Top Logo (Shows on Login and Home Pages) */}
+        {(!isLoggedIn || (!isChatMode && !isVoiceMode)) && (
+          <div className="logo-container fade-in">
+            <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
+          </div>
+        )}
+
         {!isLoggedIn ? (
           <LoginPage onLogin={handleLogin} />
         ) : (
@@ -416,12 +423,7 @@ function App() {
               </button>
             )}
 
-            {/* Logo Container for Home Page Only */}
-            {!isChatMode && !isVoiceMode && (
-              <div className="logo-container fade-in">
-                <img src="logo.png?v=3" alt="LUCA Logo" className="app-logo" />
-              </div>
-            )}
+
 
             {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (

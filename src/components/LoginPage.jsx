@@ -53,7 +53,6 @@ const LoginPage = ({ onLogin }) => {
   return (
     <div className="login-page-container">
       <div className="login-card">
-        <h1 className="login-title">Welcome</h1>
         
         <form id="luca-login-form" onSubmit={handleSubmit} className="login-form">
           <div className="login-field">
