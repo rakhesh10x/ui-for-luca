@@ -21,7 +21,9 @@ export function PWABadge() {
     setNeedRefresh(false);
   };
 
-  if (!offlineReady && !needRefresh) {
+  // Only show the popup when an update is available (needRefresh).
+  // Do not show for offlineReady.
+  if (!needRefresh) {
     return null;
   }
 
