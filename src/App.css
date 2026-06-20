@@ -355,6 +355,8 @@
   max-width: 85%;
   font-size: 1rem;
   line-height: 1.5;
+  opacity: 0;
+  animation: messageAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 /* Thinking State */
@@ -428,9 +430,6 @@
 .thinking-text.active {
   opacity: 1;
   transform: translateY(0);
-}
-  opacity: 0;
-  animation: messageAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes messageAppear {
