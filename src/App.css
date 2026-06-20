@@ -472,7 +472,8 @@
 }
 
 .message-row.ai {
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 16px;
 }
 
 .message.ai {
