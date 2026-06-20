@@ -110,7 +110,7 @@
 .logo-container {
   position: absolute;
   top: 25px;
-  left: calc(50% - 113px); /* Nudged left exactly 3px */
+  left: calc(50% - 116px); /* Nudged left another 3px */
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
