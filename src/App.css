@@ -110,7 +110,7 @@
 .logo-container {
   position: absolute;
   top: 25px;
-  left: calc(50% - 150px);
+  left: calc(50% - 110px);
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
@@ -157,7 +157,7 @@
 /* Home Page Specific Mobile Override */
 @media (max-width: 768px) {
   .app-main:not(.chat-mode) .bottom-bar-container {
-    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 24px));
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 16px));
   }
 }
 
