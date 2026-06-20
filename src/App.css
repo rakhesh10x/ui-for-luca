@@ -255,14 +255,15 @@
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 20px);
   left: calc(env(safe-area-inset-left, 0px) + 20px);
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(10, 10, 10, 0.6); /* Darker background for contrast */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Stronger border */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1); /* Glow and shadow */
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -271,8 +272,15 @@
   transition: all 0.2s ease;
 }
 
+.back-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.4)); /* Icon glow */
+}
+
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   transform: scale(1.05);
 }
 
@@ -282,10 +290,14 @@
 
 @media (max-width: 768px) {
   .back-btn {
-    top: calc(env(safe-area-inset-top, 0px) + 12px);
-    left: calc(env(safe-area-inset-left, 0px) + 12px);
-    width: 40px;
-    height: 40px;
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    left: calc(env(safe-area-inset-left, 0px) + 16px);
+    width: 52px; /* Increased touch target for mobile */
+    height: 52px;
+  }
+  .back-btn svg {
+    width: 28px;
+    height: 28px;
   }
 }
 
