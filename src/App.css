@@ -464,20 +464,24 @@
   align-self: flex-start;
   background-color: transparent;
   color: var(--text-main);
-  position: relative; /* Anchor for speaker button */
-  /* display: flex and gap removed to prevent flex wrapping issues */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-actions {
+  display: flex;
+  justify-content: flex-end; /* Align speaker icon to the right side of the bubble */
+  width: 100%;
 }
 
 /* Speaker Icon Button */
 .speaker-btn {
-  position: absolute;
-  right: -36px; /* Hang outside the right edge of the message */
-  bottom: 0px; /* Align with the bottom of the text like in Gemini */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: transparent;
   color: #a1a1aa;
@@ -485,22 +489,18 @@
   transition: all 0.2s ease;
   border: none;
   outline: none;
-  z-index: 10;
 }
 
 .speaker-btn svg {
   width: 18px;
   height: 18px;
-  stroke: #a1a1aa;
+  stroke: currentColor;
   transition: stroke 0.2s ease;
-}
-
-.speaker-btn:hover svg {
-  stroke: #ffffff;
 }
 
 .speaker-btn:hover {
   background: rgba(255, 255, 255, 0.08); /* Subtle hover effect */
+  color: #ffffff;
 }
 
 .speaker-btn:active {
