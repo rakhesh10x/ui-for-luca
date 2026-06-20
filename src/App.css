@@ -492,7 +492,7 @@
   border-radius: 50%;
   background: transparent;
   color: #ffffff; /* White color */
-  opacity: 0.5; /* 50% opacity creates the perfect subtle gray */
+  opacity: 0.85; /* Highly visible, but slightly softer than pure stark white */
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
