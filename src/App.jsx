@@ -397,6 +397,13 @@ function App() {
               </button>
             )}
 
+            {/* Logo Container for Home Page Only */}
+            {!isChatMode && !isVoiceMode && (
+              <div className="logo-container fade-in">
+                <img src="logo.png" alt="LUCA Logo" className="app-logo" />
+              </div>
+            )}
+
             {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
