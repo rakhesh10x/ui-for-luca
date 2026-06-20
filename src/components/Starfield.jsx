@@ -1,27 +1,24 @@
 import React, { useMemo } from 'react';
 import './Starfield.css';
 
-const Starfield = () => {
+const Starfield = ({ isFullScreen = false }) => {
   const stars = useMemo(() => {
     const generatedStars = [];
-    for (let i = 0; i < 70; i++) {
-      // Distribute sizes: mostly 1-1.5px, a few slightly larger
+    // Increased to 150 stars to maintain the same density across 100vh
+    for (let i = 0; i < 150; i++) {
       const rand = Math.random();
       let size = 1.5;
       if (rand > 0.9) size = 2.5;
       else if (rand > 0.7) size = 2;
-      else size = Math.random() * 0.5 + 1; // 1 to 1.5px
+      else size = Math.random() * 0.5 + 1;
 
-      // Base opacity: vary from faint to brighter
-      const baseOpacity = Math.random() * 0.5 + 0.3; // 0.3 to 0.8
-
-      // Add a soft glow to about 20% of stars
+      const baseOpacity = Math.random() * 0.5 + 0.3;
       const hasGlow = Math.random() > 0.8;
 
       generatedStars.push({
         id: i,
-        top: Math.random() * 100, // 0-100%
-        left: Math.random() * 100, // 0-100%
+        top: Math.random() * 100, // 0-100% of 100vh
+        left: Math.random() * 100, // 0-100vw
         size,
         baseOpacity,
         hasGlow,
@@ -31,7 +28,7 @@ const Starfield = () => {
   }, []);
 
   return (
-    <div className="home-starfield-container">
+    <div className={`home-starfield-container ${isFullScreen ? 'full-screen' : 'masked'}`}>
       {stars.map((star) => (
         <svg
           key={star.id}

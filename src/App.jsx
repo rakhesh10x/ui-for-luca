@@ -181,10 +181,8 @@ function App() {
           <div className="ambient-valley-mask"></div>
         </div>
 
-        {/* Top Area Cleaned */}
-        {!isChatMode && !isVoiceMode && (
-          <Starfield />
-        )}
+        {/* Starfield Background */}
+        <Starfield isFullScreen={isChatMode || isVoiceMode} />
 
         {!isLoggedIn ? (
           <LoginPage onLogin={handleLogin} />
