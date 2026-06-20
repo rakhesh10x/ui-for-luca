@@ -180,22 +180,6 @@ function drawLiquidCapsule(canvas, state) {
   ctx.fillStyle = liquidFill;
   ctx.fill();
 
-  ctx.save();
-  ctx.strokeStyle = `rgba(255, 255, 255, ${0.22 + (glow * 0.18)})`;
-  ctx.lineWidth = 1.4;
-  ctx.filter = `blur(${1.4 + (glow * 1.6)}px)`;
-  ctx.beginPath();
-  ctx.moveTo(surfacePoints[0].x, surfacePoints[0].y);
-  for (let index = 1; index < surfacePoints.length; index += 1) {
-    const prev = surfacePoints[index - 1];
-    const current = surfacePoints[index];
-    const midX = (prev.x + current.x) / 2;
-    const midY = (prev.y + current.y) / 2;
-    ctx.quadraticCurveTo(prev.x, prev.y, midX, midY);
-  }
-  ctx.stroke();
-  ctx.restore();
-
   ctx.restore();
 }
 
@@ -306,17 +290,17 @@ function App() {
             const rawVolume = Math.min(average / 100, 1);
 
             // 2. Smooth it with a low-pass filter EXACTLY as requested:
-            // smoothedVolume += (rawVolume - smoothedVolume) * 0.05
-            liquidState.level += (rawVolume - liquidState.level) * 0.05;
+            // smoothedVolume += (rawVolume - smoothedVolume) * 0.03
+            liquidState.level += (rawVolume - liquidState.level) * 0.03;
             
             // Link glow directly to the smoothed volume
             liquidState.glow = Math.min(liquidState.level * 1.2, 1);
 
             // 3. Use smoothed volume to control speed
-            // When idle (level=0), it should move extremely slowly (0.02)
-            // When shouting (level=1), it hits 5.0 (highly energetic)
-            liquidState.flow += dt * (0.02 + (liquidState.level * 5.0));
-            liquidState.drift += dt * (0.01 + (liquidState.glow * 2.0));
+            // When idle (level=0), it should move extremely slowly (0.01)
+            // When shouting (level=1), it hits 1.5 (calm but active)
+            liquidState.flow += dt * (0.01 + (liquidState.level * 1.5));
+            liquidState.drift += dt * (0.005 + (liquidState.glow * 0.5));
 
             if (buttonRef.current) {
               buttonRef.current.style.boxShadow = `0 0 ${14 + (liquidState.glow * 20)}px rgba(71, 118, 255, ${0.08 + (liquidState.glow * 0.22)}), 0 10px 24px rgba(0, 0, 0, 0.45)`;
