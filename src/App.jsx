@@ -128,27 +128,28 @@ function App() {
             if (buttonRef.current) {
               // Generate SVG Paths for the waves
               const paths = buttonRef.current.querySelectorAll('path');
-              if (paths.length === 4) { // Changed to 4 layers
+              if (paths.length === 5) { // Changed to 5 layers for thick fog effect
                 const width = 140;
                 const height = 64;
-                const baseY = 45; // Sit slightly higher to occupy bottom 40%
+                const baseY = 40; // Base sits around lower half
                 
-                // Higher frequencies (0.08 - 0.15) to ensure multiple ripples, NOT one single bump
+                // Very low frequencies (0.02 - 0.04) to ensure only 1-2 ultra-wide gentle swells
                 const waves = [
-                  { speedMult: 3.5, freq: 0.08, ampMult: 0.8, offset: 0 },
-                  { speedMult: 2.5, freq: 0.11, ampMult: 1.0, offset: 2.5 },
-                  { speedMult: 4.0, freq: 0.14, ampMult: 0.6, offset: 5.0 },
-                  { speedMult: 2.0, freq: 0.09, ampMult: 1.2, offset: 1.0 }
+                  { speedMult: 1.5, freq: 0.02, ampMult: 0.8, offset: 0 },
+                  { speedMult: 1.0, freq: 0.03, ampMult: 1.0, offset: 2.0 },
+                  { speedMult: 2.0, freq: 0.04, ampMult: 0.6, offset: 4.0 },
+                  { speedMult: 1.2, freq: 0.025, ampMult: 1.2, offset: 1.0 },
+                  { speedMult: 0.8, freq: 0.035, ampMult: 0.9, offset: 3.0 }
                 ];
 
                 waves.forEach((wave, i) => {
                   let d = `M 0 ${height} `;
                   
-                  // Amplitude scales dynamically. Max amplitude around 15px so it ripples across the whole width
-                  const amplitude = 1.0 + (smoothedVolume * 15 * wave.ampMult);
+                  // Amplitude reduced by 80%. Max amplitude is around 3-4px so vertical movement is tiny.
+                  const amplitude = 0.5 + (smoothedVolume * 4 * wave.ampMult);
                   
                   // Calculate points across the X axis
-                  for (let x = 0; x <= width; x += 4) {
+                  for (let x = 0; x <= width; x += 5) {
                     const y = baseY - Math.sin(x * wave.freq + waveTime * wave.speedMult + wave.offset) * amplitude;
                     d += `L ${x} ${y} `;
                   }
@@ -334,29 +335,20 @@ function App() {
                   <defs>
                     <linearGradient id="waveGrad1" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="rgba(255, 255, 255, 0.9)" />
-                      <stop offset="40%" stopColor="rgba(40, 100, 255, 0.8)" />
+                      <stop offset="30%" stopColor="rgba(40, 100, 255, 0.8)" />
                       <stop offset="100%" stopColor="rgba(10, 30, 150, 0.9)" />
                     </linearGradient>
                     <linearGradient id="waveGrad2" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="rgba(255, 255, 255, 0.7)" />
-                      <stop offset="50%" stopColor="rgba(50, 120, 255, 0.7)" />
+                      <stop offset="40%" stopColor="rgba(50, 120, 255, 0.7)" />
                       <stop offset="100%" stopColor="rgba(15, 40, 160, 0.9)" />
                     </linearGradient>
-                    <linearGradient id="waveGrad3" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.8)" />
-                      <stop offset="30%" stopColor="rgba(60, 140, 255, 0.8)" />
-                      <stop offset="100%" stopColor="rgba(20, 50, 180, 0.9)" />
-                    </linearGradient>
-                    <linearGradient id="waveGrad4" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0.9)" />
-                      <stop offset="60%" stopColor="rgba(80, 150, 255, 0.8)" />
-                      <stop offset="100%" stopColor="rgba(30, 60, 200, 0.9)" />
-                    </linearGradient>
                   </defs>
-                  <path fill="url(#waveGrad1)" opacity="0.6" style={{ filter: 'blur(3px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad2)" opacity="0.7" style={{ filter: 'blur(2px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad3)" opacity="0.8" style={{ filter: 'blur(1.5px)', mixBlendMode: 'screen' }} />
-                  <path fill="url(#waveGrad4)" opacity="0.9" style={{ filter: 'blur(1px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad1)" opacity="0.5" style={{ filter: 'blur(8px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad2)" opacity="0.6" style={{ filter: 'blur(6px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad1)" opacity="0.7" style={{ filter: 'blur(5px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad2)" opacity="0.8" style={{ filter: 'blur(4px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad1)" opacity="0.9" style={{ filter: 'blur(3px)', mixBlendMode: 'screen' }} />
                 </svg>
               </div>
               
