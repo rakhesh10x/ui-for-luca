@@ -283,11 +283,16 @@ function App() {
             
             // 1. Get real microphone volume
             let sum = 0;
-            for (let i = 0; i < frequencyData.length; i++) {
+            // Only average the first 100 bins (lower frequencies where voice lives)
+            // to prevent high-frequency silence from dragging down the average.
+            const voiceBins = 100; 
+            for (let i = 0; i < voiceBins; i++) {
               sum += frequencyData[i];
             }
-            const average = sum / frequencyData.length;
-            const rawVolume = Math.min(average / 100, 1);
+            const average = sum / voiceBins;
+            
+            // Boost sensitivity. Normal speech average is around 20-40.
+            const rawVolume = Math.min(average / 40, 1);
 
             // 2. Smooth it with a low-pass filter EXACTLY as requested:
             // smoothedVolume += (rawVolume - smoothedVolume) * 0.03
