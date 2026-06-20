@@ -464,6 +464,35 @@
   align-self: flex-start;
   background-color: transparent;
   color: var(--text-main);
+  display: flex;
+  align-items: center; /* Center horizontally with text */
+  gap: 16px; /* Spacing between text and speaker icon */
+}
+
+/* Speaker Icon Button */
+.speaker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted, #a1a1aa);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0; /* Starts hidden until messageAppear animation */
+  animation-delay: 0.2s; /* Slight delay after message text */
+}
+
+.speaker-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main, #ffffff);
+}
+
+.speaker-btn:active {
+  transform: scale(0.9);
 }
 
 /* Voice Mode Top Bar */
