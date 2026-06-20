@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Starfield from './components/Starfield';
+import LoginPage from './components/LoginPage';
 import { PWABadge } from './components/PWABadge';
 import './index.css';
 import './App.css';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  
   const [isChatMode, setIsChatMode] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -15,6 +19,27 @@ function App() {
   const buttonRef = useRef(null);
   const audioCtxRef = useRef(null);
   const animationFrameRef = useRef(null);
+
+  // Check localStorage for existing session
+  useEffect(() => {
+    const storedUser = localStorage.getItem('lucaUser');
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed.fullName && parsed.mobileNumber) {
+          setUser(parsed);
+          setIsLoggedIn(true);
+        }
+      } catch (e) {
+        console.error("Invalid user data in localStorage");
+      }
+    }
+  }, []);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setIsLoggedIn(true);
+  };
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -161,7 +186,11 @@ function App() {
           <Starfield />
         )}
 
-        {/* Center Content for Home and Voice Mode */}
+        {!isLoggedIn ? (
+          <LoginPage onLogin={handleLogin} />
+        ) : (
+          <>
+            {/* Center Content for Home and Voice Mode */}
         {(!isChatMode || isVoiceMode) && (
           <div className="center-content">
             {/* Logo removed as requested */}
@@ -207,6 +236,8 @@ function App() {
               </button>
             </div>
           </div>
+        )}
+        </>
         )}
 
       </main>
