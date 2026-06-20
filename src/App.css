@@ -118,12 +118,6 @@
   z-index: 5;
 }
 
-@media (max-width: 768px) {
-  .logo-container {
-    left: calc(50% - 76px); /* Scale down the nudge for the smaller mobile logo */
-  }
-}
-
 .app-logo {
   width: 380px; /* Desktop */
   object-fit: contain;
@@ -252,14 +246,6 @@
 .slide-up {
   animation: premiumSlideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
   opacity: 0;
-}
-
-/* Hidden state for persistent home components */
-.hidden-home {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 /* Hidden state for persistent home components */
