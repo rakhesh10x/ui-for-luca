@@ -23,17 +23,17 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/Eyes_of_LUCA-removebg-preview.png',
+            src: '/favicon_cropped.png?v=3',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/Eyes_of_LUCA-removebg-preview.png',
+            src: '/favicon_cropped.png?v=3',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: '/Eyes_of_LUCA-removebg-preview.png',
+            src: '/favicon_cropped.png?v=3',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
