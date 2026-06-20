@@ -435,7 +435,7 @@ function App() {
         {isChatMode && !isVoiceMode && (
           <div className="chat-history">
             {messages.map((msg, idx) => (
-              <div key={idx} className={`chat-message ${msg.role}`}>
+              <div key={idx} className={`message ${msg.role}`}>
                 <div className="message-content fade-in">
                   {msg.content}
                 </div>
