@@ -262,6 +262,14 @@
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
+/* Hidden state for persistent home components */
+.hidden-home {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
 /* Chat Mode Styles */
 .chat-mode {
   justify-content: flex-start;
