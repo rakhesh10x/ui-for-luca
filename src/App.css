@@ -419,23 +419,16 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  /* Very subtle outer container pulse */
-  transform: scale(calc(1 + var(--vol, 0) * 0.02));
-  transition: transform 0.05s linear;
-  /* Box shadow set by JS */
+  transition: box-shadow 0.1s linear;
 }
 
-.voice-layer {
+.wave-svg {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  mix-blend-mode: screen;
-  /* Dynamic blur set by JS */
-  filter: blur(var(--dynamic-blur, 12px));
-  opacity: var(--glow-opacity, 0.3);
-  /* Transform completely controlled by JS physics */
-  will-change: transform;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 /* --- Chat Mode Overrides --- */

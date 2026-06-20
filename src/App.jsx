@@ -90,19 +90,10 @@ function App() {
           source.connect(analyser);
           const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-          // Spring physics variables
+          // Spring physics for volume
           let smoothedVolume = 0;
           let peakVolume = 0;
           let peakHoldTime = 0;
-
-          // Define 4 orbs with physics state
-          // blue goes left, cyan goes mid-left, purple goes mid-right, pink goes right
-          const orbs = [
-            { id: 'blue', x: 0, vX: 0, s: 1, vS: 0, targetX: -60, idleSpeed: 1.2, idleAmp: 5, stiffness: 0.1, damping: 0.8 },
-            { id: 'cyan', x: 0, vX: 0, s: 1, vS: 0, targetX: -20, idleSpeed: 0.9, idleAmp: 7, stiffness: 0.08, damping: 0.85 },
-            { id: 'purple', x: 0, vX: 0, s: 1, vS: 0, targetX: 20, idleSpeed: 1.1, idleAmp: 6, stiffness: 0.09, damping: 0.82 },
-            { id: 'pink', x: 0, vX: 0, s: 1, vS: 0, targetX: 60, idleSpeed: 1.3, idleAmp: 4, stiffness: 0.12, damping: 0.75 }
-          ];
 
           const renderFrame = () => {
             analyser.getByteFrequencyData(dataArray);
@@ -116,59 +107,56 @@ function App() {
             // Peak hold logic
             if (rawVolume > peakVolume) {
               peakVolume = rawVolume;
-              peakHoldTime = 10; // Frames to hold
+              peakHoldTime = 10;
             } else if (peakHoldTime > 0) {
               peakHoldTime--;
             } else {
-              peakVolume += (rawVolume - peakVolume) * 0.05; // Slow decay
+              peakVolume += (rawVolume - peakVolume) * 0.05;
             }
 
             // Smooth volume
             if (peakVolume > smoothedVolume) {
               smoothedVolume += (peakVolume - smoothedVolume) * 0.4;
             } else {
-              smoothedVolume += (peakVolume - smoothedVolume) * 0.1;
+              smoothedVolume += (peakVolume - smoothedVolume) * 0.08;
             }
 
             if (buttonRef.current) {
               const time = Date.now() / 1000;
               
-              // Apply physics to layers
-              const layerElements = buttonRef.current.children;
-              if (layerElements.length >= 4) {
-                for (let i = 0; i < 4; i++) {
-                  const orb = orbs[i];
-                  
-                  // Calculate target X based on volume (spring flow outwards)
-                  const baseTargetX = orb.targetX * smoothedVolume * 1.2;
-                  
-                  // Add idle breathing motion
-                  const idleOffset = Math.sin(time * orb.idleSpeed) * orb.idleAmp;
-                  const finalTargetX = baseTargetX + idleOffset;
-                  
-                  // Target scale
-                  const finalTargetS = 1 + smoothedVolume * 0.5;
+              // Generate SVG Paths for the waves
+              const paths = buttonRef.current.querySelectorAll('path');
+              if (paths.length === 3) {
+                const width = 140;
+                const height = 64;
+                const baseY = 55; // Sit near the bottom
+                
+                // Define 3 waves with different phases, speeds, and frequency
+                const waves = [
+                  { speed: 2.0, freq: 0.05, ampMult: 1.0, offset: 0 },
+                  { speed: 1.5, freq: 0.04, ampMult: 0.8, offset: Math.PI },
+                  { speed: 2.5, freq: 0.06, ampMult: 1.2, offset: Math.PI / 2 }
+                ];
 
-                  // Spring Physics calculation
-                  // Acceleration = Stiffness * (Target - Current) - Damping * Velocity
-                  const accX = orb.stiffness * (finalTargetX - orb.x);
-                  orb.vX = (orb.vX + accX) * orb.damping;
-                  orb.x += orb.vX;
-
-                  const accS = orb.stiffness * (finalTargetS - orb.s);
-                  orb.vS = (orb.vS + accS) * orb.damping;
-                  orb.s += orb.vS;
-
-                  // Apply inline styles for butter-smooth 60fps
-                  layerElements[i].style.transform = `translate(calc(-50% + ${orb.x}px), -50%) scale(${orb.s})`;
-                }
+                waves.forEach((wave, i) => {
+                  let d = `M 0 ${height} `;
+                  
+                  // Base amplitude (idle) + dynamic amplitude (volume)
+                  const amplitude = 2 + (smoothedVolume * 35 * wave.ampMult);
+                  
+                  // Calculate points
+                  for (let x = 0; x <= width; x += 5) {
+                    const y = baseY - Math.sin(x * wave.freq + time * wave.speed + wave.offset) * amplitude;
+                    d += `L ${x} ${y} `;
+                  }
+                  
+                  d += `L ${width} ${height} Z`;
+                  paths[i].setAttribute('d', d);
+                });
               }
 
-              // Set container styling for glow and blur dynamically
-              const blurVal = 12 + smoothedVolume * 12;
-              buttonRef.current.style.setProperty('--glow-opacity', 0.2 + smoothedVolume * 0.5);
-              buttonRef.current.style.setProperty('--dynamic-blur', `${blurVal}px`);
-              buttonRef.current.style.boxShadow = `0 0 ${20 + smoothedVolume*40}px rgba(81, 45, 168, ${0.2 + smoothedVolume*0.5})`;
+              // Dynamic glow
+              buttonRef.current.style.boxShadow = `0 4px ${10 + smoothedVolume*30}px rgba(66, 133, 244, ${0.2 + smoothedVolume*0.4})`;
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
@@ -339,10 +327,25 @@ function App() {
               </button>
               
               <div className="voice-glow-btn" ref={buttonRef}>
-                <div className="voice-layer" style={{ backgroundColor: '#3b82f6', width: '50px', height: '50px' }}></div>
-                <div className="voice-layer" style={{ backgroundColor: '#06b6d4', width: '40px', height: '40px' }}></div>
-                <div className="voice-layer" style={{ backgroundColor: '#8b5cf6', width: '55px', height: '55px' }}></div>
-                <div className="voice-layer" style={{ backgroundColor: '#ec4899', width: '45px', height: '45px' }}></div>
+                <svg className="wave-svg" width="140" height="64" viewBox="0 0 140 64" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="waveGrad1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(100, 180, 255, 0.9)" />
+                      <stop offset="100%" stopColor="rgba(40, 100, 255, 0.5)" />
+                    </linearGradient>
+                    <linearGradient id="waveGrad2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(180, 220, 255, 0.8)" />
+                      <stop offset="100%" stopColor="rgba(80, 150, 255, 0.4)" />
+                    </linearGradient>
+                    <linearGradient id="waveGrad3" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(220, 240, 255, 0.7)" />
+                      <stop offset="100%" stopColor="rgba(120, 180, 255, 0.3)" />
+                    </linearGradient>
+                  </defs>
+                  <path fill="url(#waveGrad1)" opacity="0.6" style={{ filter: 'blur(3px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad2)" opacity="0.7" style={{ filter: 'blur(2px)', mixBlendMode: 'screen' }} />
+                  <path fill="url(#waveGrad3)" opacity="0.8" style={{ filter: 'blur(1px)', mixBlendMode: 'screen' }} />
+                </svg>
               </div>
               
               <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
