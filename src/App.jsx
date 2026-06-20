@@ -90,6 +90,8 @@ function App() {
           source.connect(analyser);
           const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
+          let smoothedVolume = 0;
+
           const renderFrame = () => {
             analyser.getByteFrequencyData(dataArray);
             let sum = 0;
@@ -97,19 +99,18 @@ function App() {
               sum += dataArray[i];
             }
             const average = sum / dataArray.length;
-            const volume = Math.min(average / 100, 1);
+            const rawVolume = Math.min(average / 100, 1);
+
+            // Gemini-style liquid physics: peak hold and soft decay
+            if (rawVolume > smoothedVolume) {
+              smoothedVolume += (rawVolume - smoothedVolume) * 0.4; // Fast attack
+            } else {
+              smoothedVolume += (rawVolume - smoothedVolume) * 0.08; // Smooth, slow decay
+            }
 
             if (buttonRef.current) {
-              const time = Date.now() / 1000;
-              const idleSine = (Math.sin(time * 2.5) + 1) / 2; // 0 to 1
-              
-              const scale = Math.max(1 + (idleSine * 0.05), 1 + (volume * 0.15));
-              const opacity = Math.max(0.3 + (idleSine * 0.2), 0.3 + (volume * 0.7));
-              const spread = Math.max(20 + (idleSine * 10), 20 + (volume * 50));
-              
-              buttonRef.current.style.transform = `scale(${scale})`;
-              buttonRef.current.style.boxShadow = `inset 0 -10px ${20 + volume*20}px rgba(81, 45, 168, ${0.4 + volume*0.4}), 0 0 ${spread}px rgba(63, 81, 181, ${0.4 + volume*0.5})`;
-              buttonRef.current.style.setProperty('--volume-opacity', opacity);
+              // Only pass the single robust smoothed variable to CSS
+              buttonRef.current.style.setProperty('--vol', smoothedVolume.toFixed(3));
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
@@ -279,7 +280,12 @@ function App() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
               
-              <div className="voice-glow-btn" ref={buttonRef}></div>
+              <div className="voice-glow-btn" ref={buttonRef}>
+                <div className="voice-layer layer-blue"></div>
+                <div className="voice-layer layer-purple"></div>
+                <div className="voice-layer layer-pink"></div>
+                <div className="voice-layer layer-cyan"></div>
+              </div>
               
               <button className="voice-btn" aria-label="Done" onClick={handleVoiceSuccess}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
