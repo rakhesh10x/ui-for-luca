@@ -296,36 +296,30 @@ function App() {
             liquidState.lastTime = now;
 
             analyser.getByteFrequencyData(frequencyData);
-            analyser.getFloatTimeDomainData(timeData);
-
-            let frequencySum = 0;
+            
+            // 1. Get real microphone volume
+            let sum = 0;
             for (let i = 0; i < frequencyData.length; i++) {
-              frequencySum += frequencyData[i];
+              sum += frequencyData[i];
             }
+            const average = sum / frequencyData.length;
+            const rawVolume = Math.min(average / 100, 1);
 
-            let squareSum = 0;
-            let peak = 0;
-            for (let i = 0; i < timeData.length; i++) {
-              const sample = timeData[i];
-              squareSum += sample * sample;
-              peak = Math.max(peak, Math.abs(sample));
+            // 2. Smooth it with a low-pass filter as requested
+            // Attack is slightly faster, decay is very slow for inertia
+            if (rawVolume > liquidState.level) {
+              liquidState.level += (rawVolume - liquidState.level) * 0.08; 
+            } else {
+              liquidState.level += (rawVolume - liquidState.level) * 0.02; 
             }
+            
+            // Link glow directly to the smoothed volume
+            liquidState.glow = Math.min(liquidState.level * 1.2, 1);
 
-            const rms = Math.sqrt(squareSum / timeData.length);
-            const spectral = frequencySum / (frequencyData.length * 255);
-            const activity = clamp(((rms - 0.018) * 9.5) + (peak * 0.45) + (spectral * 0.3), 0, 1);
-            if (activity > 0.07) {
-              liquidState.holdUntil = now + 170;
-            }
-
-            const held = liquidState.holdUntil > now;
-            const targetLevel = held ? clamp((activity * 0.9) + 0.1, 0, 1) : clamp(activity * 0.6, 0, 1);
-            const targetGlow = held ? clamp((activity * 0.85) + 0.18, 0, 1) : clamp(activity * 0.45, 0, 1);
-
-            stepSpring(liquidState, 'level', 'levelVelocity', targetLevel, 18, held ? 6.5 : 8.2, dt);
-            stepSpring(liquidState, 'glow', 'glowVelocity', targetGlow, 16, held ? 7 : 9.4, dt);
-            liquidState.flow += dt * (0.9 + (liquidState.level * 2.1));
-            liquidState.drift += dt * (0.45 + (liquidState.glow * 0.8));
+            // 3. Use smoothed volume to control speed
+            // When idle (level=0), it should move extremely slowly
+            liquidState.flow += dt * (0.1 + (liquidState.level * 4.0));
+            liquidState.drift += dt * (0.05 + (liquidState.glow * 1.5));
 
             if (buttonRef.current) {
               buttonRef.current.style.boxShadow = `0 0 ${14 + (liquidState.glow * 20)}px rgba(71, 118, 255, ${0.08 + (liquidState.glow * 0.22)}), 0 10px 24px rgba(0, 0, 0, 0.45)`;
