@@ -465,14 +465,10 @@
   background-color: transparent;
   color: var(--text-main);
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.message-actions {
-  display: flex;
-  justify-content: flex-end; /* Align speaker icon to the right side of the bubble */
-  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Important to make space-between work across the full available space */
 }
 
 /* Speaker Icon Button */
@@ -489,6 +485,7 @@
   transition: all 0.2s ease;
   border: none;
   outline: none;
+  flex-shrink: 0; /* Important so it doesn't get squished by text */
 }
 
 .speaker-btn svg {
