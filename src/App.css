@@ -101,6 +101,7 @@
   font-weight: 700; /* Bold as per requirement */
   letter-spacing: -0.04em;
   color: var(--text-main);
+  margin-top: 120px;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   text-align: center;
 }
