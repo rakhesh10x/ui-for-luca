@@ -490,8 +490,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: transparent;
-  color: #888888; /* Solid mid-gray, inherently subtle */
+  background: rgba(255, 255, 255, 0.05); /* Faint base circle for visibility debugging */
+  color: #a1a1aa; /* Brighter gray */
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
