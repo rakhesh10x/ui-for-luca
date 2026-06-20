@@ -90,12 +90,6 @@ function drawLiquidCapsule(canvas, state) {
   ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, width, height);
 
-  const glowGradient = ctx.createRadialGradient(width * 0.5, height * 0.74, 4, width * 0.5, height * 0.74, width * 0.48);
-  glowGradient.addColorStop(0, `rgba(115, 168, 255, ${0.4 + (glow * 0.5)})`);
-  glowGradient.addColorStop(0.55, `rgba(58, 104, 255, ${0.3 + (glow * 0.5)})`);
-  glowGradient.addColorStop(1, 'rgba(9, 14, 38, 0)');
-  ctx.fillStyle = glowGradient;
-  ctx.fillRect(0, 0, width, height);
 
   const surfacePoints = [];
   for (let index = 0; index <= SURFACE_SAMPLES; index += 1) {
