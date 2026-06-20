@@ -460,15 +460,25 @@
   border: 1px solid rgba(255, 255, 255, 0.03); /* Extremely subtle edge highlight */
 }
 
+.message-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.message-row.user {
+  justify-content: flex-end;
+}
+
+.message-row.ai {
+  justify-content: space-between;
+}
+
 .message.ai {
   align-self: flex-start;
   background-color: transparent;
   color: var(--text-main);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%; /* Important to make space-between work across the full available space */
 }
 
 /* Speaker Icon Button */
