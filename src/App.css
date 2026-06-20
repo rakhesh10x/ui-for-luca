@@ -157,7 +157,7 @@
 /* Home Page Specific Mobile Override */
 @media (max-width: 768px) {
   .app-main:not(.chat-mode) .bottom-bar-container {
-    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 16px));
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom, 16px));
   }
 }
 
