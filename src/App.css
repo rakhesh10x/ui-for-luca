@@ -491,13 +491,13 @@
   height: 32px;
   border-radius: 50%;
   background: transparent;
-  color: #71717a; /* Softer, understated gray */
+  color: #a1a1aa; /* Brighter gray for better base visibility */
   cursor: pointer;
   transition: all 0.3s ease; /* Smooth, premium transition */
   border: none;
   outline: none;
   flex-shrink: 0; /* Important so it doesn't get squished by text */
-  opacity: 0.35; /* Subtle idle state */
+  opacity: 0.6; /* Visible, but muted */
 }
 
 .speaker-btn svg {
@@ -511,9 +511,9 @@
 }
 
 .speaker-btn:hover {
-  background: rgba(255, 255, 255, 0.04); /* Very subtle hover circle */
-  color: #a1a1aa; /* Slightly brighter on hover */
-  opacity: 0.8; /* Bring it into focus */
+  background: rgba(255, 255, 255, 0.08); /* Slightly more visible hover circle */
+  color: #ffffff; /* Brighter on hover */
+  opacity: 1; /* Bring it into full focus */
 }
 
 .speaker-btn:active {
