@@ -82,7 +82,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.25rem;
   width: 100%;
 }
 
@@ -131,6 +131,7 @@
 .eyes-logo {
   width: 250px; /* Desktop: 220-280px */
   object-fit: contain;
+  margin-bottom: -10px;
 }
 
 @media (max-width: 768px) {
