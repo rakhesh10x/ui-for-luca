@@ -490,30 +490,24 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05); /* Faint base circle for visibility debugging */
-  color: #a1a1aa; /* Brighter gray */
+  background: transparent;
+  color: #ffffff; /* White color */
+  opacity: 0.5; /* 50% opacity creates the perfect subtle gray */
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   border: none;
   outline: none;
   flex-shrink: 0;
-  opacity: 1; /* Full opacity so it doesn't vanish on dark screens */
 }
 
 .speaker-btn svg {
-  width: 18px !important;
-  height: 18px !important;
-  stroke: currentColor !important;
-  stroke-width: 2px !important;
-  fill: none !important;
-  visibility: visible !important;
-  display: block !important;
+  width: 18px;
+  height: 18px;
 }
 
 .speaker-btn:hover {
-  background: rgba(255, 255, 255, 0.08); /* Slightly more visible hover circle */
-  color: #ffffff; /* Brighter on hover */
-  opacity: 1; /* Bring it into full focus */
+  background: rgba(255, 255, 255, 0.1); /* Subtle hover circle */
+  opacity: 1; /* Full brightness on hover */
 }
 
 .speaker-btn:active {
