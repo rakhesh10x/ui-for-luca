@@ -94,6 +94,7 @@ function App() {
           let smoothedVolume = 0;
           let peakVolume = 0;
           let peakHoldTime = 0;
+          let waveTime = 0; // Custom time accumulator for variable speed
 
           const renderFrame = () => {
             analyser.getByteFrequencyData(dataArray);
@@ -114,39 +115,40 @@ function App() {
               peakVolume += (rawVolume - peakVolume) * 0.05;
             }
 
-            // Smooth volume
+            // Smooth volume (gradual calm down)
             if (peakVolume > smoothedVolume) {
               smoothedVolume += (peakVolume - smoothedVolume) * 0.4;
             } else {
               smoothedVolume += (peakVolume - smoothedVolume) * 0.08;
             }
 
+            // Wave speed increases with volume
+            waveTime += 0.03 + (smoothedVolume * 0.06);
+
             if (buttonRef.current) {
-              const time = Date.now() / 1000;
-              
               // Generate SVG Paths for the waves
               const paths = buttonRef.current.querySelectorAll('path');
               if (paths.length === 3) {
                 const width = 140;
                 const height = 64;
-                const baseY = 55; // Sit near the bottom
+                const baseY = 58; // Sit extremely low at the bottom edge
                 
-                // Define 3 waves with different phases, speeds, and frequency
+                // Define 3 waves with different phases and frequency
                 const waves = [
-                  { speed: 2.0, freq: 0.05, ampMult: 1.0, offset: 0 },
-                  { speed: 1.5, freq: 0.04, ampMult: 0.8, offset: Math.PI },
-                  { speed: 2.5, freq: 0.06, ampMult: 1.2, offset: Math.PI / 2 }
+                  { speedMult: 2.0, freq: 0.05, ampMult: 1.0, offset: 0 },
+                  { speedMult: 1.5, freq: 0.04, ampMult: 0.8, offset: Math.PI },
+                  { speedMult: 2.5, freq: 0.06, ampMult: 1.2, offset: Math.PI / 2 }
                 ];
 
                 waves.forEach((wave, i) => {
                   let d = `M 0 ${height} `;
                   
-                  // Base amplitude (idle) + dynamic amplitude (volume)
-                  const amplitude = 2 + (smoothedVolume * 35 * wave.ampMult);
+                  // Base amplitude (idle) is tiny. Max amplitude is 22px so it NEVER crosses the middle (y=32)
+                  const amplitude = 1.5 + (smoothedVolume * 22 * wave.ampMult);
                   
                   // Calculate points
                   for (let x = 0; x <= width; x += 5) {
-                    const y = baseY - Math.sin(x * wave.freq + time * wave.speed + wave.offset) * amplitude;
+                    const y = baseY - Math.sin(x * wave.freq + waveTime * wave.speedMult + wave.offset) * amplitude;
                     d += `L ${x} ${y} `;
                   }
                   
@@ -155,8 +157,8 @@ function App() {
                 });
               }
 
-              // Dynamic glow
-              buttonRef.current.style.boxShadow = `0 4px ${10 + smoothedVolume*30}px rgba(66, 133, 244, ${0.2 + smoothedVolume*0.4})`;
+              // Dynamic glow (no scaling, just a soft blue glow behind the pill)
+              buttonRef.current.style.boxShadow = `0 4px ${10 + smoothedVolume*30}px rgba(66, 133, 244, ${0.1 + smoothedVolume*0.3})`;
             }
             animationFrameRef.current = requestAnimationFrame(renderFrame);
           };
