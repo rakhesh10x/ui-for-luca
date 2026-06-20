@@ -471,27 +471,36 @@
 /* Speaker Icon Button */
 .speaker-btn {
   position: absolute;
-  right: -40px; /* Hang outside the right edge of the message */
-  top: 50%;
-  transform: translateY(-50%);
+  right: -36px; /* Hang outside the right edge of the message */
+  bottom: 0px; /* Align with the bottom of the text like in Gemini */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05); /* Make it slightly visible by default so we know it's there */
+  background: transparent;
   color: #a1a1aa;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   outline: none;
   z-index: 10;
 }
 
+.speaker-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #a1a1aa;
+  transition: stroke 0.2s ease;
+}
+
+.speaker-btn:hover svg {
+  stroke: #ffffff;
+}
+
 .speaker-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-main, #ffffff);
+  background: rgba(255, 255, 255, 0.08); /* Subtle hover effect */
 }
 
 .speaker-btn:active {
